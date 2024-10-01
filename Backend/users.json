@@ -1,0 +1,16 @@
+[
+  {
+    "id_usuario": "e878042e-0aeb-4167-a813-e47db9b80523",
+    "nombre": "kmilo",
+    "email": "kmilo@mail.com",
+    "pass": "qwe1234*",
+    "fecha_creacion": "2024-07-28T09:45:47.830Z"
+  },
+  {
+    "id_usuario": "b7d0c712-d9ae-467f-949a-975010578475",
+    "nombre": "Jessica",
+    "email": "jessica@mail.com",
+    "pass": "123qwe*",
+    "fecha_creacion": "2024-07-28T09:49:02.546Z"
+  }
+]
