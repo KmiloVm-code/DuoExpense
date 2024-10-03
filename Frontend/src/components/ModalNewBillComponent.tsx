@@ -1,17 +1,22 @@
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, DatePicker, Select, SelectItem, Checkbox } from '@nextui-org/react'
+
 import { ChangeEvent, FC, FormEvent, useState } from 'react'
 import { Bill } from '../Models/BillsModel'
 import { useAuth } from '../contexts/AuthContext'
 
 interface ModalNewBillProps {
   isOpen: boolean;
-  closeModal: () => void;
   categorias: Array<{ id: number; nombre: string }>;
   metodoPago: Array<{ id: number; nombre: string }>;
   addNewBill: (bill: Bill) => Promise<void>;
+  onOpenChange: () => void;
 }
 
-const ModalNewBill: FC<ModalNewBillProps> = ({ isOpen, closeModal, categorias, metodoPago, addNewBill }) => {
+const ModalNewBill: FC<ModalNewBillProps> = ({ isOpen, categorias, metodoPago, addNewBill, onOpenChange }) => {
   const [showCreditCard, setShowCreditCard] = useState(false)
+  const [isGastoFijo, setIsGastoFijo] = useState(false)
+  const [isLoaded, setIsLoaded] = useState(false)
+
   const { user } = useAuth()
 
   const handlePaymentChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -19,6 +24,7 @@ const ModalNewBill: FC<ModalNewBillProps> = ({ isOpen, closeModal, categorias, m
   }
 
   const addBill = async (event: FormEvent<HTMLFormElement>) => {
+    setIsLoaded(true)
     event.preventDefault()
 
     const fields = Object.fromEntries(new window.FormData(event.target as HTMLFormElement).entries())
@@ -29,7 +35,7 @@ const ModalNewBill: FC<ModalNewBillProps> = ({ isOpen, closeModal, categorias, m
       fecha: fields.fecha as string,
       cuotas: showCreditCard ? Number(fields.cuotas) : null,
       descripcion: fields.descripcion as string,
-      gasto_fijo: fields.gastoFijo === 'on',
+      gasto_fijo: isGastoFijo,
       id_categoria: Number(fields.idCategoria),
       id_tarjeta: showCreditCard ? Number(fields.idTarjeta) : null,
       id_metodo_pago: Number(fields.idMetodoPago),
@@ -38,7 +44,8 @@ const ModalNewBill: FC<ModalNewBillProps> = ({ isOpen, closeModal, categorias, m
 
     try {
       await addNewBill(bill)
-      closeModal()
+      setIsLoaded(false)
+      onOpenChange()
     } catch {
       throw new Error('Error al agregar el gasto')
     }
@@ -46,56 +53,52 @@ const ModalNewBill: FC<ModalNewBillProps> = ({ isOpen, closeModal, categorias, m
 
   if (!isOpen) return null
   return (
-    <main className="fixed z-50 inset-0 overflow-y-auto">
-      <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-          <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
-        </div>
-        <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
-          <form onSubmit={addBill} onReset={closeModal} className="flex flex-col gap-5 p-5">
-            <h1 className="text-2xl font-bold">Agregar Gasto</h1>
-            <input type="text" name="concepto" placeholder="Concepto" className="p-2 border border-gray-300 rounded" required/>
-            <input type="date" name="fecha" placeholder="Fecha" className="p-2 border border-gray-300 rounded" required/>
-            <input type="text" name="descripcion" placeholder="Descripcion" className="p-2 border border-gray-300 rounded" />
-            <input type="number" name="valor" placeholder="Valor" className="p-2 border border-gray-300 rounded" required/>
-            <input type="text" name="empresa" placeholder="Empresa" className="p-2 border border-gray-300 rounded" />
-            <select name="idCategoria" className="p-2 border border-gray-300 rounded" required>
-              {categorias.map((categoria) => (
-                <option key={categoria.id} value={categoria.id}>
-                  {categoria.nombre}
-                </option>
-              ))}
-            </select>
-            <select name="idMetodoPago" onChange={handlePaymentChange} className="p-2 border border-gray-300 rounded" required>
-              {metodoPago.map((metodo) => (
-                <option key={metodo.id} value={metodo.id}>
-                  {metodo.nombre}
-                </option>
-              ))}
-            </select>
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior='inside'>
+      <ModalContent>
+        {(onClose) => (
+          <>
+        <ModalHeader>
+          <h1 className='text-xl font-semibold'>Agregar Gasto</h1>
+        </ModalHeader>
+        <ModalBody className='m-1'>
+          <form onSubmit={addBill} className="flex flex-col gap-4">
+            <Input type="text" name="concepto" placeholder="Concepto" required/>
+            <DatePicker name="fecha" label="Fecha" isRequired />
+            <Input type="text" name="descripcion" placeholder="Descripcion" />
+            <Input type="number" name="valor" placeholder="Valor" required/>
+            <Input type="text" name="empresa" placeholder="Empresa" />
+            <Select name="idCategoria" label="Categoria" labelPlacement='inside' isRequired items={categorias}>
+              {(categorias) => <SelectItem key={categorias.id}>{categorias.nombre}</SelectItem>}
+            </Select>
+
+            <Select name="idMetodoPago" label="Metodo de Pago" labelPlacement='inside' isRequired items={metodoPago} onChange={handlePaymentChange}>
+              {(metodoPago) => <SelectItem key={metodoPago.id}>{metodoPago.nombre}</SelectItem>}
+            </Select>
 
             {showCreditCard && (
               <div className="flex flex-col gap-5">
-                <input type="number" name="cuotas" placeholder="Cuotas" className="p-2 border border-gray-300 rounded" required />
-                <input type="number" name="idTarjeta" placeholder="Tarjeta" className="p-2 border border-gray-300 rounded" required />
+                <Input type="number" name="cuotas" placeholder="Cuotas" required />
+                <Input type="number" name="idTarjeta" placeholder="Tarjeta" required />
               </div>
             )}
 
-            <div className="flex gap-2">
-              <input type="checkbox" name='gastoFijo' />
-              <label>Gasto Fijo</label>
-            </div>
-            <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-              Agregar Gasto
-            </button>
-            <button type="reset" className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-              Cancelar
-            </button>
+            <Checkbox name='gastoFijo' color='secondary' isSelected={isGastoFijo} onValueChange={setIsGastoFijo}>Gasto Fijo</Checkbox>
+
+            <ModalFooter>
+              <Button type="submit" color='secondary' isLoading={isLoaded}>
+                Agregar Gasto
+              </Button>
+              <Button type="reset" color='danger' variant='bordered' onPress={onClose}>
+                Cancelar
+              </Button>
+            </ModalFooter>
+
           </form>
-        </div>
-      </div>
-    </main>
+        </ModalBody>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
   )
 }
 

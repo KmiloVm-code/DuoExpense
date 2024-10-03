@@ -1,12 +1,14 @@
 import { Card, CardHeader, CardBody, CardFooter } from '@nextui-org/card'
 import { Bill } from '../Models/BillsModel'
+import { Button } from '@nextui-org/react'
 
 type billCardProps = {
   bill: Bill;
   deleteBill: ({ id }: { id: number }) => Promise<void>;
+  toggleModal: () => void;
 }
 
-const BillCard = ({ bill, deleteBill }: billCardProps) => {
+const BillCard = ({ bill, deleteBill, toggleModal }: billCardProps) => {
   return (
     <Card key={bill.id_gasto} className="mb-3">
     <CardHeader>
@@ -21,12 +23,12 @@ const BillCard = ({ bill, deleteBill }: billCardProps) => {
     </CardBody>
     <CardFooter>
       <div className="flex gap-2">
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <Button color='secondary' variant='flat' onPress={toggleModal}>
           Editar
-        </button>
-        <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={() => bill.id_gasto !== undefined && deleteBill({ id: bill.id_gasto })}>
+        </Button>
+        <Button color='danger' variant='light' onPress={() => bill.id_gasto !== undefined && deleteBill({ id: bill.id_gasto })}>
           Eliminar
-        </button>
+        </Button>
       </div>
     </CardFooter>
   </Card>

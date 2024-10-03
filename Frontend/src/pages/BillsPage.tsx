@@ -1,10 +1,11 @@
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from '@nextui-org/table'
-import { Input } from '@nextui-org/react'
+import { Button, useDisclosure } from '@nextui-org/react'
+import { Input } from '@nextui-org/input'
 
 import { useAuth } from '../contexts/AuthContext'
 
 import { useBills } from '../hooks/useBills.ts'
-import { useModal } from '../hooks/useModal'
+// import { useModal } from '../hooks/useModal'
 
 import TableCellComponent from '../components/BillTableCell.tsx'
 import ModalNewBill from '../components/ModalNewBillComponent'
@@ -16,7 +17,8 @@ function BillsPage () {
   const { user } = useAuth()
   const idUsuario = user.id_usuario || ''
   const { bills, createBill, deleteBill, searchBill } = useBills(idUsuario)
-  const { isOpen, toggleModal } = useModal()
+  // const { isOpen, toggleModal } = useModal()
+  const { isOpen, onOpen, onOpenChange } = useDisclosure()
 
   const metodoPago = [
     { id: 1, nombre: 'Tarjeta de Credito' },
@@ -45,17 +47,17 @@ function BillsPage () {
             startContent={<i className="bx bx-search-alt-2" />}
           />
         </div>
-        <button onClick={toggleModal} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Nuevo Gasto
-        </button>
+        <Button onPress={onOpen} color='secondary' variant='shadow'>
+          <h1 className='font-bold text-xl'>+</h1> Agregar Gasto
+        </Button>
       </section>
 
       <ModalNewBill
         isOpen={isOpen}
-        closeModal={toggleModal}
         categorias={categorias}
         metodoPago={metodoPago}
         addNewBill={createBill}
+        onOpenChange={onOpenChange}
       />
 
       <Table className='hidden md:block w-full'
@@ -77,7 +79,7 @@ function BillsPage () {
         <TableBody<Bill> emptyContent={<p>No Hay Gastos</p>} items={bills}>
           {(bill) => (
             <TableRow key={bill.id_gasto}>
-              {(columnKey) => <TableCell>{<TableCellComponent bill={bill} columnKey={columnKey} deleteBill={deleteBill} metodoPago={metodoPago} />}</TableCell>}
+              {(columnKey) => <TableCell>{<TableCellComponent bill={bill} columnKey={columnKey} deleteBill={deleteBill} metodoPago={metodoPago} toggleModal={onOpen} />}</TableCell>}
             </TableRow>
           )}
         </TableBody>
@@ -85,7 +87,7 @@ function BillsPage () {
 
       <div className="md:hidden w-full">
         {bills.map((bill) => (
-          <BillCard key={bill.id_gasto} bill={bill} deleteBill={deleteBill} />
+          <BillCard key={bill.id_gasto} bill={bill} deleteBill={deleteBill} toggleModal={onOpen} />
         ))}
       </div>
     </main>

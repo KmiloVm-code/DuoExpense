@@ -1,14 +1,16 @@
 import { Key } from 'react'
 import { Bill } from '../Models/BillsModel'
+import { Button } from '@nextui-org/react'
 
 type BillTableCellProps = {
   bill: Bill;
   columnKey: Key;
   deleteBill: ({ id }: { id: number }) => Promise<void>;
   metodoPago: { id: number, nombre: string }[];
+  toggleModal: () => void;
 }
 
-const TableCellComponent = ({ bill, columnKey, deleteBill, metodoPago }: BillTableCellProps) => {
+const TableCellComponent = ({ bill, columnKey, deleteBill, metodoPago, toggleModal }: BillTableCellProps) => {
   const cellValue = bill[columnKey as keyof Bill]
   return (
     <>
@@ -21,12 +23,12 @@ const TableCellComponent = ({ bill, columnKey, deleteBill, metodoPago }: BillTab
       )}
       {columnKey === 'actions' && (
         <div className="flex gap-2">
-          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          <Button color='secondary' variant='flat' onPress={toggleModal}>
             Editar
-          </button>
-          <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={() => bill.id_gasto !== undefined && deleteBill({ id: bill.id_gasto })}>
+          </Button>
+          <Button color='danger' variant='light' onPress={() => bill.id_gasto !== undefined && deleteBill({ id: bill.id_gasto })}>
             Eliminar
-          </button>
+          </Button>
         </div>
       )}
     </>
