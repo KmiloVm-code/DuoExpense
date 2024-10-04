@@ -25,7 +25,7 @@ export const createApp = ({ userModel, ingresoFijoModel, gastoModel }) => {
     req.session = { user: null }
 
     try {
-      const data = jwt.verify(token, 'secret')
+      const data = jwt.verify(token, process.env.SECRET_KEY)
       req.session.user = data
     } catch {}
 
@@ -48,7 +48,7 @@ export const createApp = ({ userModel, ingresoFijoModel, gastoModel }) => {
     }
 
     try {
-      const data = jwt.verify(token, 'secret')
+      const data = jwt.verify(token, process.env.SECRET_KEY)
       const user = await userModel.getById({ id: data.id })
       const { ...publicUser } = user[0]
       return res.status(200).json({ message: 'Sesión válida', publicUser })
