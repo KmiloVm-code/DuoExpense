@@ -1,7 +1,6 @@
 // Función para convertir fecha en formato "dd/mm/yyyy"
 export const convertDate = (date: string): string => {
-  const newDate = new Date(date)
-  return newDate.toLocaleDateString()
+  return date.split('T')[0].split('-').reverse().join('-')
 }
 
 // Función para convertir valor en formato COP sin decimales

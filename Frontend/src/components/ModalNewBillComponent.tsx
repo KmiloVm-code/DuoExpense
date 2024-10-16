@@ -1,92 +1,113 @@
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, DatePicker, Select, SelectItem, Checkbox } from '@nextui-org/react'
+import { FC } from 'react'
+import { parseDate } from '@internationalized/date'
 
-import { ChangeEvent, FC, FormEvent, useState } from 'react'
 import { Bill } from '../Models/BillsModel'
 import { useAuth } from '../contexts/AuthContext'
+import { useFormHandler } from '../hooks/useFormHandler'
+import { usePaymentMethod } from '../hooks/usePaymentMethod'
+import { useCategories } from '../hooks/UseCategories'
 
 interface ModalNewBillProps {
   isOpen: boolean;
-  categorias: Array<{ id: number; nombre: string }>;
-  metodoPago: Array<{ id: number; nombre: string }>;
   addNewBill: (bill: Bill) => Promise<void>;
   onOpenChange: () => void;
+  billToEdit?: Bill | null;
 }
 
-const ModalNewBill: FC<ModalNewBillProps> = ({ isOpen, categorias, metodoPago, addNewBill, onOpenChange }) => {
-  const [showCreditCard, setShowCreditCard] = useState(false)
-  const [isGastoFijo, setIsGastoFijo] = useState(false)
-  const [isLoaded, setIsLoaded] = useState(false)
-
+const ModalNewBill: FC<ModalNewBillProps> = ({ isOpen, addNewBill, onOpenChange, billToEdit }) => {
   const { user } = useAuth()
 
-  const handlePaymentChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    setShowCreditCard(event.target.value === '1')
+  const initialData: Bill = {
+    id_usuario: user?.id_usuario,
+    concepto: '',
+    descripcion: '',
+    valor: 0,
+    empresa: '',
+    id_categoria: 0,
+    id_metodo_pago: 0,
+    cuotas: null,
+    id_tarjeta: null,
+    fecha: new Date().toISOString()
   }
 
-  const addBill = async (event: FormEvent<HTMLFormElement>) => {
-    setIsLoaded(true)
-    event.preventDefault()
-
-    const fields = Object.fromEntries(new window.FormData(event.target as HTMLFormElement).entries())
-    const bill: Bill = {
-      id_usuario: user.id_usuario,
-      concepto: fields.concepto as string,
-      valor: Number(fields.valor),
-      fecha: fields.fecha as string,
-      cuotas: showCreditCard ? Number(fields.cuotas) : null,
-      descripcion: fields.descripcion as string,
-      gasto_fijo: isGastoFijo,
-      id_categoria: Number(fields.idCategoria),
-      id_tarjeta: showCreditCard ? Number(fields.idTarjeta) : null,
-      id_metodo_pago: Number(fields.idMetodoPago),
-      empresa: fields.empresa as string
-    }
-
-    try {
-      await addNewBill(bill)
-      setIsLoaded(false)
+  const { dataToEdit, handleSubmit, handleErrors, error, isSubmitting } = useFormHandler<Bill>({
+    initialData,
+    onSubmit: async (data) => {
+      await addNewBill(data)
       onOpenChange()
-    } catch {
-      throw new Error('Error al agregar el gasto')
-    }
-  }
+    },
+    dataToEdit: billToEdit
+  })
+
+  const { showCreditCard, handlePaymentChange, paymentMethod } = usePaymentMethod()
+
+  const { categories } = useCategories()
 
   if (!isOpen) return null
+  if (error) {
+    return (
+    <Modal isOpen={isOpen} onOpenChange={handleErrors}>
+      <ModalContent>
+        <ModalHeader>
+          <h1 className='text-xl font-semibold'>Error</h1>
+        </ModalHeader>
+        <ModalBody>
+          <p>Ha ocurrido un error al agregar el gasto</p>
+        </ModalBody>
+        <ModalFooter>
+          <Button color='danger' variant='bordered' onPress={() => handleErrors(null)}>
+            Cerrar
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+    )
+  }
+
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior='inside'>
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} onSubmit={handleSubmit} scrollBehavior='inside'>
       <ModalContent>
         {(onClose) => (
           <>
         <ModalHeader>
-          <h1 className='text-xl font-semibold'>Agregar Gasto</h1>
+          <h1 className='text-xl font-semibold'> {billToEdit ? 'Editar Gasto' : 'Nuevo Gasto'} </h1>
         </ModalHeader>
         <ModalBody className='m-1'>
-          <form onSubmit={addBill} className="flex flex-col gap-4">
-            <Input type="text" name="concepto" placeholder="Concepto" required/>
-            <DatePicker name="fecha" label="Fecha" isRequired />
-            <Input type="text" name="descripcion" placeholder="Descripcion" />
-            <Input type="number" name="valor" placeholder="Valor" required/>
-            <Input type="text" name="empresa" placeholder="Empresa" />
-            <Select name="idCategoria" label="Categoria" labelPlacement='inside' isRequired items={categorias}>
-              {(categorias) => <SelectItem key={categorias.id}>{categorias.nombre}</SelectItem>}
+          <form className="flex flex-col gap-4">
+            <Input type="text" name="concepto" placeholder="Concepto" defaultValue={dataToEdit?.concepto} required/>
+            <DatePicker name="fecha" label="Fecha" labelPlacement='inside' defaultValue={parseDate(dataToEdit?.fecha?.split('T')[0] || new Date().toISOString().split('T')[0])} />
+            <Input type="text" name="descripcion" placeholder="Descripcion" defaultValue={dataToEdit?.descripcion} />
+            <Input type="number" onWheel={(e) => e.currentTarget.blur()} name="valor" placeholder="Valor" defaultValue={dataToEdit?.valor?.toString()} required
+            startContent={
+              <div className="pointer-events-none flex items-center">
+                <span className="text-default-400 text-small">$</span>
+              </div>
+            }
+            />
+            <Input type="text" name="empresa" placeholder="Empresa" defaultValue={dataToEdit?.empresa} />
+            <Select name="id_categoria" label="Categoria" labelPlacement='inside' defaultSelectedKeys={dataToEdit?.id_categoria ? [dataToEdit?.id_categoria.toString()] : []} isRequired items={categories}>
+              {(category) => <SelectItem key={category.id}>{category.nombre}</SelectItem>}
             </Select>
 
-            <Select name="idMetodoPago" label="Metodo de Pago" labelPlacement='inside' isRequired items={metodoPago} onChange={handlePaymentChange}>
-              {(metodoPago) => <SelectItem key={metodoPago.id}>{metodoPago.nombre}</SelectItem>}
+            <Select name="id_metodo_pago" label="Metodo de Pago" labelPlacement='inside' isRequired items={paymentMethod} onChange={handlePaymentChange} defaultSelectedKeys={dataToEdit?.id_metodo_pago ? [dataToEdit?.id_metodo_pago.toString()] : []}>
+              {(method) => <SelectItem key={method.id}>{method.nombre}</SelectItem>}
             </Select>
 
             {showCreditCard && (
               <div className="flex flex-col gap-5">
-                <Input type="number" name="cuotas" placeholder="Cuotas" required />
-                <Input type="number" name="idTarjeta" placeholder="Tarjeta" required />
+                <Input type="number" onWheel={(e) => e.currentTarget.blur()} name="cuotas" placeholder="Cuotas" defaultValue={dataToEdit?.cuotas?.toString()} required />
+                <Input type="number" onWheel={(e) => e.currentTarget.blur()} name="id_tarjeta" placeholder="Tarjeta" defaultValue={dataToEdit?.id_tarjeta?.toString()} required />
               </div>
             )}
 
-            <Checkbox name='gastoFijo' color='secondary' isSelected={isGastoFijo} onValueChange={setIsGastoFijo}>Gasto Fijo</Checkbox>
+            <Checkbox type='checkbox' name='gasto_fijo' color='secondary' defaultSelected={dataToEdit?.gasto_fijo} >
+              Gasto Fijo
+            </Checkbox>
 
             <ModalFooter>
-              <Button type="submit" color='secondary' isLoading={isLoaded}>
-                Agregar Gasto
+              <Button type="submit" color='secondary' isLoading={isSubmitting}>
+                {billToEdit ? 'Guardar Cambios' : 'Agregar Gasto'}
               </Button>
               <Button type="reset" color='danger' variant='bordered' onPress={onClose}>
                 Cancelar

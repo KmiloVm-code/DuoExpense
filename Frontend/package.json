@@ -12,6 +12,7 @@
   "dependencies": {
     "@headlessui/react": "^2.1.8",
     "@heroicons/react": "^2.1.5",
+    "@internationalized/date": "^3.5.6",
     "@nextui-org/avatar": "^2.0.33",
     "@nextui-org/dropdown": "^2.1.31",
     "@nextui-org/input": "^2.2.5",

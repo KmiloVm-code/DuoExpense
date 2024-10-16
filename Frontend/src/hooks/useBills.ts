@@ -6,7 +6,6 @@ import {
   updateBillService
 } from '../services/bills.ts'
 import { Bill } from '../Models/BillsModel.ts'
-import { convertDate, convertValue } from '../utils/formatters.ts'
 import debounce from 'just-debounce-it'
 
 export const useBills = (userid: string) => {
@@ -30,30 +29,29 @@ export const useBills = (userid: string) => {
 
   const createBill = async (bill: Bill) => {
     const newBill = await createBillService({ bill })
-
+    console.log(newBill)
     const formattedBill = {
-      ...newBill,
-      fecha: convertDate(newBill.fecha || ''),
-      valor: convertValue(newBill.valor || 0)
+      ...newBill
     }
 
     setBills((prevBills: Bill[]) => [...prevBills, formattedBill])
   }
 
   const updateBill = async (bill: Bill) => {
-    const updatedBill = await updateBillService(bill)
+    const updatedBill = await updateBillService({ bill })
 
     const formattedBill = {
-      ...updatedBill,
-      fecha: convertDate(updatedBill.fecha || ''),
-      valor: convertValue(updatedBill.valor || 0)
+      ...updatedBill
     }
 
-    setBills((prevBills) =>
-      prevBills.map((b) =>
-        b.id_gasto === formattedBill.id_gasto ? formattedBill : b
-      )
-    )
+    console.log('formattedBill', formattedBill)
+
+    setBills((prevBills: Bill[]) => {
+      const billsCopy = [...prevBills]
+      const billIndex = billsCopy.findIndex((b) => b.id_gasto === bill.id_gasto)
+      billsCopy[billIndex] = formattedBill
+      return billsCopy
+    })
   }
 
   const deleteBill = async ({ id }: { id: number }) => {

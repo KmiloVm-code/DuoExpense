@@ -5,7 +5,7 @@ import { Button } from '@nextui-org/react'
 type billCardProps = {
   bill: Bill;
   deleteBill: ({ id }: { id: number }) => Promise<void>;
-  toggleModal: () => void;
+  toggleModal: (bill: Bill) => void;
 }
 
 const BillCard = ({ bill, deleteBill, toggleModal }: billCardProps) => {
@@ -23,7 +23,7 @@ const BillCard = ({ bill, deleteBill, toggleModal }: billCardProps) => {
     </CardBody>
     <CardFooter>
       <div className="flex gap-2">
-        <Button color='secondary' variant='flat' onPress={toggleModal}>
+        <Button color='secondary' variant='flat' onPress={() => toggleModal(bill)}>
           Editar
         </Button>
         <Button color='danger' variant='light' onPress={() => bill.id_gasto !== undefined && deleteBill({ id: bill.id_gasto })}>

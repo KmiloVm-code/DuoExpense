@@ -12,27 +12,26 @@ import ModalNewBill from '../components/ModalNewBillComponent'
 import BillCard from '../components/BillCard.tsx'
 
 import { Bill } from '../Models/BillsModel.ts'
+import { useState } from 'react'
 
 function BillsPage () {
   const { user } = useAuth()
   const idUsuario = user.id_usuario || ''
-  const { bills, createBill, deleteBill, searchBill } = useBills(idUsuario)
+  const { bills, createBill, updateBill, deleteBill, searchBill } = useBills(idUsuario)
   // const { isOpen, toggleModal } = useModal()
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
 
-  const metodoPago = [
-    { id: 1, nombre: 'Tarjeta de Credito' },
-    { id: 2, nombre: 'Tarjeta de Debito' },
-    { id: 3, nombre: 'Efectivo' },
-    { id: 4, nombre: 'Transferencia' },
-    { id: 5, nombre: 'Otro' }
-  ]
+  const [billToEdit, setBillToEdit] = useState<Bill | null>(null)
 
-  const categorias = [
-    { id: 1, nombre: 'Alimentacion' },
-    { id: 2, nombre: 'Electronicos' },
-    { id: 3, nombre: 'Salud y Belleza' }
-  ]
+  const editOpen = (bill: Bill) => {
+    setBillToEdit(bill)
+    onOpen()
+  }
+
+  const newOpen = () => {
+    setBillToEdit(null)
+    onOpen()
+  }
 
   return (
     <main className="flex flex-col items-center justify-center w-full m-auto gap-8 p-8">
@@ -47,17 +46,16 @@ function BillsPage () {
             startContent={<i className="bx bx-search-alt-2" />}
           />
         </div>
-        <Button onPress={onOpen} color='secondary' variant='shadow'>
+        <Button onPress={newOpen} color='secondary' variant='shadow'>
           <h1 className='font-bold text-xl'>+</h1> Agregar Gasto
         </Button>
       </section>
 
       <ModalNewBill
         isOpen={isOpen}
-        categorias={categorias}
-        metodoPago={metodoPago}
-        addNewBill={createBill}
+        addNewBill={billToEdit ? updateBill : createBill}
         onOpenChange={onOpenChange}
+        billToEdit={billToEdit}
       />
 
       <Table className='hidden md:block w-full'
@@ -79,7 +77,7 @@ function BillsPage () {
         <TableBody<Bill> emptyContent={<p>No Hay Gastos</p>} items={bills}>
           {(bill) => (
             <TableRow key={bill.id_gasto}>
-              {(columnKey) => <TableCell>{<TableCellComponent bill={bill} columnKey={columnKey} deleteBill={deleteBill} metodoPago={metodoPago} toggleModal={onOpen} />}</TableCell>}
+              {(columnKey) => <TableCell>{<TableCellComponent bill={bill} columnKey={columnKey} deleteBill={deleteBill} toggleModal={editOpen} />}</TableCell>}
             </TableRow>
           )}
         </TableBody>

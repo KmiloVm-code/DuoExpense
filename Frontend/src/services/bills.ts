@@ -1,5 +1,4 @@
 import { Bill } from '../Models/BillsModel.ts'
-import { convertDate, convertValue } from '../utils/formatters.ts'
 
 const API_URL = `${import.meta.env.VITE_API_URL}/gastos`
 const options: RequestInit = {
@@ -16,8 +15,8 @@ const buildBillRequest = (bill: Bill) => ({
   fecha: bill.fecha,
   descripcion: bill.descripcion,
   idMetodoPago: bill.id_metodo_pago,
-  idTarjeta: bill.id_tarjeta,
-  cuotas: bill.cuotas,
+  idTarjeta: bill.id_tarjeta || null,
+  cuotas: bill.cuotas || null,
   valor: bill.valor,
   gastoFijo: bill.gasto_fijo,
   idCategoria: bill.id_categoria,
@@ -31,9 +30,7 @@ export const getBillsService = async ({ filters }: {filters: string}) => {
 
     const data = await res.json()
     return data?.map((bill: Bill) => ({
-      ...bill,
-      fecha: convertDate(bill.fecha || ''),
-      valor: convertValue(bill.valor || 0)
+      ...bill
     }))
   } catch {
     throw new Error('Error al obtener los gastos')
@@ -57,7 +54,7 @@ export const createBillService = async ({ bill }: {bill: Bill}) => {
   }
 }
 
-export const updateBillService = async (bill: Bill) => {
+export const updateBillService = async ({ bill }: {bill: Bill}) => {
   try {
     const billRequest = buildBillRequest(bill)
     const res = await fetch(`${API_URL}/${bill.id_gasto}`, {
