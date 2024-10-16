@@ -1,6 +1,7 @@
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link as ReactLink, DropdownItem, DropdownTrigger, Dropdown, DropdownMenu, Avatar } from '@nextui-org/react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import logo from '../assets/logo.png'
 
 function NavbarComponent () {
   const { user, logout } = useAuth()
@@ -12,7 +13,10 @@ function NavbarComponent () {
     <>
       <Navbar isBordered isBlurred position="sticky" className="top-0">
         <NavbarBrand>
-          <img src="/vite.svg" alt="NextUI" />
+          <Link to={'/'} className="flex items-center gap-2">
+            <img src={logo} alt="Logo" className="h-16" />
+            <h1 className="text-lg font-bold">DuoExpense</h1>
+          </Link>
         </NavbarBrand>
         <NavbarContent className="sm:flex gap-4" justify="center">
         <NavbarItem isActive={isActive('/')}>
