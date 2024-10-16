@@ -7,7 +7,7 @@ export class GastoModel {
       const values = []
 
       for (const key in filters) {
-        if (key === 'id_usuario') {
+        if (key === 'id_usuario' || key === 'id_gasto') {
           query += ` AND ${key} = $${values.length + 1}`
           values.push(filters[key])
         } else {
