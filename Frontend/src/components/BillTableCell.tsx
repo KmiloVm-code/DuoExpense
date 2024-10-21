@@ -1,57 +1,133 @@
-import { Key } from 'react'
-import { Bill } from '../Models/BillsModel'
+import { Key, useCallback, useState } from 'react'
 import { Button } from '@nextui-org/react'
-import { convertDate, convertValue } from '../utils/formatters.ts'
-import { usePaymentMethod } from '../hooks/usePaymentMethod.ts'
 
-type BillTableCellProps = {
-  bill: Bill;
-  columnKey: Key;
-  deleteBill: ({ id }: { id: number }) => Promise<void>;
-  toggleModal: (bill: Bill) => void;
+import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from '@nextui-org/table'
+import { Card, CardHeader, CardBody, CardFooter } from '@nextui-org/card'
+
+type BillTableCellProps<T extends { concepto: string }> = {
+  toggleModal: (item: T) => void;
+  data: T[];
+  dataDelete: (id: number) => void;
+  columns: { key: keyof T | string, label: string }[];
+  formatDate?: (value: string) => string;
+  formatValue?: (value: number) => string;
+  getId: (item: T) => number;
+  renderActions?: (item: T) => JSX.Element;
+  renderItems?: (item: T, columnKey: Key) => JSX.Element;
 }
 
-const TableCellComponent = ({ bill, columnKey, deleteBill, toggleModal }: BillTableCellProps) => {
-  const cellValue = bill[columnKey as keyof Bill]
+const TableCellComponent = <T extends { concepto: string }, >({
+  toggleModal,
+  data,
+  dataDelete,
+  columns,
+  formatDate = (value) => value,
+  formatValue = (value) => value.toString(),
+  getId,
+  renderItems,
+  renderActions
+}: BillTableCellProps<T>) => {
+  const [, setError] = useState<unknown | null>(null)
 
-  const { paymentMethod } = usePaymentMethod()
+  const handleEdit = useCallback((item: T) => () => {
+    toggleModal(item)
+  }, [toggleModal])
 
-  const handleEdit = () => {
-    toggleModal(bill)
-  }
-
-  const handleDelete = () => {
-    if (bill.id_gasto !== undefined) {
-      deleteBill({ id: bill.id_gasto })
-    } else {
-      console.error('El id_gasto es indefinido')
+  const handleDelete = (item: T) => {
+    const id = getId(item)
+    try {
+      dataDelete(id)
+    } catch (error) {
+      setError(error)
+      throw new Error('Error al eliminar el item')
     }
   }
 
-  const metodoNombre = paymentMethod.find((metodo) => metodo.id === cellValue)?.nombre
+  const dataCell = (item: T, columnKey: Key) => {
+    const value = item[columnKey as keyof T]
+
+    switch (columnKey) {
+      case 'valor':
+        return <span>{formatValue(value as unknown as number)}</span>
+      case 'fecha':
+        return <span>{formatDate(value as unknown as string)}</span>
+      case 'actions':
+        return renderActions
+          ? renderActions(item)
+          : (
+          <div className='flex gap-2 w-full'>
+            <Button color='secondary' variant='flat' onPress={handleEdit(item)}>
+              Editar
+            </Button>
+            <Button color='danger' variant='light' onPress={() => handleDelete(item)}>
+              Eliminar
+            </Button>
+          </div>
+            )
+      default:
+        return (
+          renderItems
+            ? renderItems(item, columnKey)
+            : <span>{String(value)}</span>
+        )
+    }
+  }
 
   return (
     <>
-      {columnKey === 'gasto_fijo' && <span>{cellValue ? 'Si' : 'No'}</span>}
-      {columnKey === 'id_metodo_pago' && <span>{metodoNombre}</span>}
-      {columnKey === 'valor' &&
-        <span> {convertValue(cellValue as number)} </span>}
-      {columnKey === 'fecha' &&
-        <span>{convertDate(cellValue as string)}</span>
-      }
-      {columnKey !== 'gasto_fijo' && columnKey !== 'id_metodo_pago' && columnKey !== 'fecha' && columnKey !== 'valor' && (
-        <span>{cellValue}</span>
-      )}
-      {columnKey === 'actions' && (
-        <div className="flex gap-2">
-          <Button color='secondary' variant='flat' onPress={handleEdit}>
-            Editar
-          </Button>
-          <Button color='danger' variant='light' onPress={handleDelete}>
-            Eliminar
-          </Button>
-        </div>
-      )}
+      <Table className='hidden md:block w-full'
+        aria-label='Data Table'
+        isHeaderSticky
+        isStriped
+        fullWidth
+      >
+        <TableHeader>
+          {
+            columns.map((column) => (
+              <TableColumn key={column.key as string} align='center'>
+                {column.label}
+              </TableColumn>
+            ))
+          }
+        </TableHeader>
+        <TableBody<T> emptyContent={<p>No Hay Items</p>} items={data}>
+          {(item) => (
+            <TableRow key={getId(item)}>
+              {(columnKey) => (
+                <TableCell>
+                  {dataCell(item, columnKey)}
+                  </TableCell>
+              )}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+
+      <div className="md:hidden w-full">
+        {
+          data.map((item) => (
+            <Card key={getId(item)} className="mb-3">
+              <CardHeader>
+                <h1 className="text-lg font-bold">{item.concepto}</h1>
+              </CardHeader>
+              <CardBody className="flex flex-col gap-2">
+                {
+                  columns.map((column) => (
+                    column.key !== 'actions' && (
+                      <p key={column.key as string}>
+                        <span className="font-bold">{column.label}:</span> {dataCell(item, column.key as Key)}
+                      </p>
+                    )
+                  ))
+                }
+              </CardBody>
+              <CardFooter>
+                {dataCell(item, 'actions')}
+              </CardFooter>
+            </Card>
+          ))
+        }
+      </div>
     </>
   )
 }

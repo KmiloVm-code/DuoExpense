@@ -1,7 +1,7 @@
 export interface Bill {
   id_gasto?: number;
   id_usuario?: string;
-  concepto?: string;
+  concepto: string;
   fecha?: string;
   descripcion?: string;
   id_metodo_pago?: number;

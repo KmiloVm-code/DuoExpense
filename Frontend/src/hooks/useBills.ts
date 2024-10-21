@@ -10,9 +10,10 @@ import debounce from 'just-debounce-it'
 
 export const useBills = (userid: string) => {
   const [bills, setBills] = useState<Bill[]>([])
-  const [, setError] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   const getBills = useCallback(async () => {
+    console.log('userid', userid)
     try {
       if (!userid) return
       const bills = await getBillsService({ filters: `id_usuario=${userid}` })
@@ -54,10 +55,13 @@ export const useBills = (userid: string) => {
     })
   }
 
-  const deleteBill = async ({ id }: { id: number }) => {
-    await deleteBillService({ id }).then(() => {
-      getBills()
-    })
+  const deleteBill = async (id: number): Promise<void> => {
+    try {
+      await deleteBillService({ id })
+      setBills((prevBills: Bill[]) => prevBills.filter((bill) => bill.id_gasto !== id))
+    } catch {
+      setError('Error al eliminar el gasto')
+    }
   }
 
   const searchBill = debounce(async (query: string) => {
@@ -81,5 +85,9 @@ export const useBills = (userid: string) => {
     }
   }, 500)
 
-  return { bills, deleteBill, createBill, searchBill, updateBill }
+  const handleErrors = () => {
+    setError(null)
+  }
+
+  return { bills, deleteBill, createBill, searchBill, updateBill, error, handleErrors }
 }

@@ -2,6 +2,8 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input
 import { FC } from 'react'
 import { parseDate } from '@internationalized/date'
 
+import ModalErrorComponent from './ModalErrorComponent'
+
 import { Bill } from '../Models/BillsModel'
 import { useAuth } from '../contexts/AuthContext'
 import { useFormHandler } from '../hooks/useFormHandler'
@@ -47,21 +49,7 @@ const ModalNewBill: FC<ModalNewBillProps> = ({ isOpen, addNewBill, onOpenChange,
   if (!isOpen) return null
   if (error) {
     return (
-    <Modal isOpen={isOpen} onOpenChange={handleErrors}>
-      <ModalContent>
-        <ModalHeader>
-          <h1 className='text-xl font-semibold'>Error</h1>
-        </ModalHeader>
-        <ModalBody>
-          <p>Ha ocurrido un error al agregar el gasto</p>
-        </ModalBody>
-        <ModalFooter>
-          <Button color='danger' variant='bordered' onPress={() => handleErrors(null)}>
-            Cerrar
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+      <ModalErrorComponent isOpen={!!error} handleErrors={handleErrors} />
     )
   }
 
@@ -106,7 +94,7 @@ const ModalNewBill: FC<ModalNewBillProps> = ({ isOpen, addNewBill, onOpenChange,
             </Checkbox>
 
             <ModalFooter>
-              <Button type="submit" color='secondary' isLoading={isSubmitting}>
+              <Button type="submit" color='secondary' disabled={isSubmitting} isLoading={isSubmitting}>
                 {billToEdit ? 'Guardar Cambios' : 'Agregar Gasto'}
               </Button>
               <Button type="reset" color='danger' variant='bordered' onPress={onClose}>

@@ -1,27 +1,25 @@
-import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from '@nextui-org/table'
 import { Button, useDisclosure } from '@nextui-org/react'
 import { Input } from '@nextui-org/input'
 
 import { useAuth } from '../contexts/AuthContext'
 
 import { useBills } from '../hooks/useBills.ts'
-// import { useModal } from '../hooks/useModal'
+import { convertValue, convertDate } from '../utils/formatters.ts'
 
 import TableCellComponent from '../components/BillTableCell.tsx'
 import ModalNewBill from '../components/ModalNewBillComponent'
-import BillCard from '../components/BillCard.tsx'
 
 import { Bill } from '../Models/BillsModel.ts'
-import { useState } from 'react'
+import { Key, useState } from 'react'
+import { usePaymentMethod } from '../hooks/usePaymentMethod.ts'
+import ModalErrorComponent from '../components/ModalErrorComponent.tsx'
 
 function BillsPage () {
   const { user } = useAuth()
-  const idUsuario = user.id_usuario || ''
-  const { bills, createBill, updateBill, deleteBill, searchBill } = useBills(idUsuario)
-  // const { isOpen, toggleModal } = useModal()
+  const { bills, createBill, updateBill, deleteBill, searchBill, error, handleErrors } = useBills(user?.id_usuario ?? '')
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
-
   const [billToEdit, setBillToEdit] = useState<Bill | null>(null)
+  const { paymentMethod } = usePaymentMethod()
 
   const editOpen = (bill: Bill) => {
     setBillToEdit(bill)
@@ -33,8 +31,47 @@ function BillsPage () {
     onOpen()
   }
 
+  const handleBill = async (bill: Bill): Promise<void> => {
+    if (bill.id_gasto) {
+      await updateBill(bill)
+    } else {
+      await createBill(bill)
+    }
+    onOpenChange()
+  }
+
+  const columns = [
+    { key: 'concepto', label: 'Concepto' },
+    { key: 'descripcion', label: 'Descripcion' },
+    { key: 'gasto_fijo', label: 'Gasto Fijo' },
+    { key: 'id_metodo_pago', label: 'Metodo de Pago' },
+    { key: 'valor', label: 'Valor' },
+    { key: 'fecha', label: 'Fecha' },
+    { key: 'actions', label: 'Acciones' }
+  ]
+
+  const getId = (item: Bill) => item.id_gasto ?? 0
+
+  const method = (id: Key) => {
+    return paymentMethod.find((metodo) => metodo.id === id)?.nombre
+  }
+
+  const renderItems = (item: Bill, columnKey: Key) => {
+    switch (columnKey) {
+      case 'gasto_fijo':
+        return <span>{item.gasto_fijo ? 'Si' : 'No'}</span>
+      case 'id_metodo_pago':
+        return <span>{item.id_metodo_pago !== undefined ? method(item.id_metodo_pago) : 'N/A'}</span>
+      default:
+        return <span>{String(item[columnKey as keyof Bill])}</span>
+    }
+  }
+
   return (
     <main className="flex flex-col items-center justify-center w-full m-auto gap-8 p-8">
+
+      {error && <ModalErrorComponent isOpen={!!error} handleErrors={handleErrors} />}
+
       <section className="flex gap-2 justify-between w-full">
         <div className="md:w-1/3">
           <Input
@@ -53,41 +90,12 @@ function BillsPage () {
 
       <ModalNewBill
         isOpen={isOpen}
-        addNewBill={billToEdit ? updateBill : createBill}
+        addNewBill={handleBill}
         onOpenChange={onOpenChange}
         billToEdit={billToEdit}
       />
 
-      <Table className='hidden md:block w-full'
-        aria-label='Gastos'
-        isHeaderSticky
-        isStriped
-        fullWidth
-      >
-        <TableHeader>
-          <TableColumn key='concepto'>Concepto</TableColumn>
-          <TableColumn key='fecha'>Fecha</TableColumn>
-          <TableColumn key='descripcion'>Descripcion</TableColumn>
-          <TableColumn key='valor'>Valor</TableColumn>
-          <TableColumn key='gasto_fijo'>Gasto Fijo</TableColumn>
-          <TableColumn key='empresa'>Empresa</TableColumn>
-          <TableColumn key='id_metodo_pago'>Medio de Pago</TableColumn>
-          <TableColumn key='actions'>Acciones</TableColumn>
-        </TableHeader>
-        <TableBody<Bill> emptyContent={<p>No Hay Gastos</p>} items={bills}>
-          {(bill) => (
-            <TableRow key={bill.id_gasto}>
-              {(columnKey) => <TableCell>{<TableCellComponent bill={bill} columnKey={columnKey} deleteBill={deleteBill} toggleModal={editOpen} />}</TableCell>}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-
-      <div className="md:hidden w-full">
-        {bills.map((bill) => (
-          <BillCard key={bill.id_gasto} bill={bill} deleteBill={deleteBill} toggleModal={onOpen} />
-        ))}
-      </div>
+      <TableCellComponent<Bill> data={bills} toggleModal={editOpen} dataDelete={deleteBill} columns={columns} formatDate={convertDate} formatValue={convertValue} getId={getId} renderItems={renderItems}/>
     </main>
   )
 }
