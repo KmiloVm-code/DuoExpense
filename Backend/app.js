@@ -1,12 +1,12 @@
 import express, { json } from 'express'
 import { createUserRouter } from './routes/users.js'
-import { createIngresosFijosRouter } from './routes/ingresosFijos.js'
+import { createIngresosRouter } from './routes/ingresos.js'
 import { createAuthRouter } from './routes/auth.js'
 import { createGastoRouter } from './routes/gasto.js'
 import jwt from 'jsonwebtoken'
 import cookieParser from 'cookie-parser'
 
-export const createApp = ({ userModel, ingresoFijoModel, gastoModel }) => {
+export const createApp = ({ userModel, ingresoModel, gastoModel }) => {
   const app = express()
   app.use(json())
   app.use(cookieParser())
@@ -67,7 +67,7 @@ export const createApp = ({ userModel, ingresoFijoModel, gastoModel }) => {
   })
 
   app.use('/users', createUserRouter({ userModel }))
-  app.use('/ingresos-fijos', createIngresosFijosRouter({ ingresoFijoModel }))
+  app.use('/ingresos', createIngresosRouter({ ingresoModel }))
   app.use('/auth', createAuthRouter({ userModel }))
   app.use('/gastos', createGastoRouter({ gastoModel }))
 

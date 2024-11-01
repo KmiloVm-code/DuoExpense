@@ -1,6 +1,6 @@
 import z from 'zod'
 
-const ingresoFijoSchema = z.object({
+const ingresoSchema = z.object({
   idUsuario: z.string({
     invalid_type_error: 'Id_usuario must be a string',
     required_error: 'Id_usuario is required'
@@ -19,10 +19,10 @@ const ingresoFijoSchema = z.object({
   })
 })
 
-export function validateIngresoFijo (object) {
-  return ingresoFijoSchema.safeParse(object)
+export function validateIngreso (object) {
+  return ingresoSchema.safeParse(object)
 }
 
-export function validatepartialIngresoFijo (object) {
-  return ingresoFijoSchema.partial().safeParse(object)
+export function validatepartialIngreso (object) {
+  return ingresoSchema.partial().safeParse(object)
 }

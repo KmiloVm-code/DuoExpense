@@ -8,8 +8,8 @@ CREATE TABLE Usuario (
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IngresoFijo (
-    id_ingreso_fijo SERIAL PRIMARY KEY,
+CREATE TABLE Ingreso (
+    id_ingreso SERIAL PRIMARY KEY,
     id_usuario UUID REFERENCES Usuario(id_usuario),
     concepto VARCHAR(100) NOT NULL,
     valor DECIMAL(10, 2) NOT NULL,
