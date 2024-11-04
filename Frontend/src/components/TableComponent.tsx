@@ -4,7 +4,7 @@ import { Button } from '@nextui-org/react'
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from '@nextui-org/table'
 import { Card, CardHeader, CardBody, CardFooter } from '@nextui-org/card'
 
-type BillTableCellProps<T extends { concepto: string }> = {
+type TableProps<T extends { concepto: string }> = {
   toggleModal: (item: T) => void;
   data: T[];
   dataDelete: (id: number) => void;
@@ -16,7 +16,7 @@ type BillTableCellProps<T extends { concepto: string }> = {
   renderItems?: (item: T, columnKey: Key) => JSX.Element;
 }
 
-const TableCellComponent = <T extends { concepto: string }, >({
+const TableComponent = <T extends { concepto: string }, >({
   toggleModal,
   data,
   dataDelete,
@@ -26,7 +26,7 @@ const TableCellComponent = <T extends { concepto: string }, >({
   getId,
   renderItems,
   renderActions
-}: BillTableCellProps<T>) => {
+}: TableProps<T>) => {
   const [, setError] = useState<unknown | null>(null)
 
   const handleEdit = useCallback((item: T) => () => {
@@ -55,7 +55,7 @@ const TableCellComponent = <T extends { concepto: string }, >({
         return renderActions
           ? renderActions(item)
           : (
-          <div className='flex gap-2 w-full'>
+          <div className='flex gap-2 justify-center'>
             <Button color='secondary' variant='flat' onPress={handleEdit(item)}>
               Editar
             </Button>
@@ -132,4 +132,4 @@ const TableCellComponent = <T extends { concepto: string }, >({
   )
 }
 
-export default TableCellComponent
+export default TableComponent

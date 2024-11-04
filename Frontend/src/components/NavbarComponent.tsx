@@ -29,9 +29,9 @@ function NavbarComponent () {
             Gastos
           </ReactLink>
         </NavbarItem>
-        <NavbarItem isActive={isActive('/#')}>
-          <ReactLink as={Link} to={'#'} color={isActive('/#') ? 'secondary' : 'foreground'}>
-            Integrations
+        <NavbarItem isActive={isActive('/ingresos')}>
+          <ReactLink as={Link} to={'/ingresos'} color={isActive('/ingresos') ? 'secondary' : 'foreground'}>
+            Ingresos
           </ReactLink>
         </NavbarItem>
       </NavbarContent>

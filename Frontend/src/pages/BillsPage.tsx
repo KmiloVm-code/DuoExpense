@@ -3,20 +3,36 @@ import { Input } from '@nextui-org/input'
 
 import { useAuth } from '../contexts/AuthContext'
 
-import { useBills } from '../hooks/useBills.ts'
+import { useData } from '../hooks/useData.ts'
 import { convertValue, convertDate } from '../utils/formatters.ts'
 
-import TableCellComponent from '../components/BillTableCell.tsx'
+import TableComponent from '../components/TableComponent.tsx'
 import ModalNewBill from '../components/ModalNewBillComponent'
 
 import { Bill } from '../Models/BillsModel.ts'
-import { Key, useState } from 'react'
+import { Key, useMemo, useState } from 'react'
 import { usePaymentMethod } from '../hooks/usePaymentMethod.ts'
 import ModalErrorComponent from '../components/ModalErrorComponent.tsx'
 
+import {
+  createBillService,
+  deleteBillService,
+  getBillsService,
+  updateBillService
+} from '../services/bills.ts'
+
 function BillsPage () {
   const { user } = useAuth()
-  const { bills, createBill, updateBill, deleteBill, searchBill, error, handleErrors } = useBills(user?.id_usuario ?? '')
+  const idUsuario = user?.id_usuario ?? ''
+
+  const services = useMemo(() => ({
+    getDataService: getBillsService,
+    createDataService: createBillService,
+    updateDataService: updateBillService,
+    deleteDataService: deleteBillService
+  }), [])
+
+  const { data: bills, error, createData, updateData, deleteData, searchData, handleErrors } = useData<Bill>(idUsuario, services)
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
   const [billToEdit, setBillToEdit] = useState<Bill | null>(null)
   const { paymentMethod } = usePaymentMethod()
@@ -33,9 +49,9 @@ function BillsPage () {
 
   const handleBill = async (bill: Bill): Promise<void> => {
     if (bill.id_gasto) {
-      await updateBill(bill)
+      await updateData(bill)
     } else {
-      await createBill(bill)
+      await createData(bill)
     }
     onOpenChange()
   }
@@ -78,8 +94,8 @@ function BillsPage () {
             placeholder="Buscar"
             radius='lg'
             isClearable
-            onClear={() => searchBill('')}
-            onChange={(e) => searchBill(e.target.value)}
+            onClear={() => searchData('')}
+            onChange={(e) => searchData(e.target.value)}
             startContent={<i className="bx bx-search-alt-2" />}
           />
         </div>
@@ -95,7 +111,15 @@ function BillsPage () {
         billToEdit={billToEdit}
       />
 
-      <TableCellComponent<Bill> data={bills} toggleModal={editOpen} dataDelete={deleteBill} columns={columns} formatDate={convertDate} formatValue={convertValue} getId={getId} renderItems={renderItems}/>
+      <TableComponent<Bill>
+      data={bills}
+      toggleModal={editOpen}
+      dataDelete={deleteData}
+      columns={columns}
+      formatDate={convertDate}
+      formatValue={convertValue}
+      getId={getId}
+      renderItems={renderItems}/>
     </main>
   )
 }

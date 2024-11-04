@@ -6,6 +6,7 @@ import BillsPage from './pages/BillsPage.tsx'
 import { ProtectedRoute } from './components/ProtectedRoute.tsx'
 import NavbarComponent from './components/NavbarComponent.tsx'
 import { NextUIProvider } from '@nextui-org/react'
+import IcomePage from './pages/IcomePage.tsx'
 
 function App () {
   const navigate = useNavigate()
@@ -17,6 +18,7 @@ function App () {
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Home />} />
           <Route path="/bills" element={<BillsPage />} />
+          <Route path="/ingresos" element={<IcomePage />} />
         </Route>
       </Routes>
     </NextUIProvider>

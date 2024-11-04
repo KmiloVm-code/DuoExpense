@@ -23,21 +23,19 @@ const buildBillRequest = (bill: Bill) => ({
   empresa: bill.empresa
 })
 
-export const getBillsService = async ({ filters }: {filters: string}) => {
+export const getBillsService = async ({ filters }: {filters?: string}): Promise<Bill[]> => {
   try {
     const res = await fetch(`${API_URL}?${filters}`, options)
     if (!res.ok) throw new Error('Error al obtener los gastos')
 
     const data = await res.json()
-    return data?.map((bill: Bill) => ({
-      ...bill
-    }))
+    return data
   } catch {
     throw new Error('Error al obtener los gastos')
   }
 }
 
-export const createBillService = async ({ bill }: {bill: Bill}) => {
+export const createBillService = async (bill: Bill): Promise<Bill> => {
   try {
     const billRequest = buildBillRequest(bill)
     const res = await fetch(API_URL, {
@@ -54,7 +52,7 @@ export const createBillService = async ({ bill }: {bill: Bill}) => {
   }
 }
 
-export const updateBillService = async ({ bill }: {bill: Bill}) => {
+export const updateBillService = async (bill: Bill): Promise<Bill> => {
   try {
     const billRequest = buildBillRequest(bill)
     const res = await fetch(`${API_URL}/${bill.id_gasto}`, {
@@ -71,7 +69,7 @@ export const updateBillService = async ({ bill }: {bill: Bill}) => {
   }
 }
 
-export const deleteBillService = async ({ id }: {id:number}) => {
+export const deleteBillService = async ({ id }: {id: number}) => {
   try {
     const res = await fetch(`${API_URL}/${id}`, {
       ...options,

@@ -21,6 +21,7 @@ const ModalNewBill: FC<ModalNewBillProps> = ({ isOpen, addNewBill, onOpenChange,
   const { user } = useAuth()
 
   const initialData: Bill = {
+    id: 0,
     id_usuario: user?.id_usuario,
     concepto: '',
     descripcion: '',
