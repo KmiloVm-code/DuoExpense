@@ -12,7 +12,9 @@ CREATE TABLE Ingreso (
     id_ingreso SERIAL PRIMARY KEY,
     id_usuario UUID REFERENCES Usuario(id_usuario),
     concepto VARCHAR(100) NOT NULL,
+    descripcion TEXT,
     valor DECIMAL(10, 2) NOT NULL,
+    ingreso_fijo BOOLEAN NOT NULL,
     fecha DATE NOT NULL
 );
 

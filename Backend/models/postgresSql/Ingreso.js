@@ -27,9 +27,9 @@ export class IngresoModel {
   }
 
   static async create ({ input }) {
-    const { idUsuario, concepto, valor, fecha, cuotas, descripcion, ingresoFijo, idCategoria, idTarjeta, idMetodoPago, empresa } = input
+    const { idUsuario, concepto, descripcion, valor, ingresoFijo, fecha } = input
     try {
-      const result = await client.query('INSERT INTO ingreso (id_usuario, concepto, valor, fecha, cuotas, descripcion, ingreso_fijo, id_categoria, id_tarjeta, id_metodo_pago, empresa) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *', [idUsuario, concepto, valor, fecha, cuotas, descripcion, ingresoFijo, idCategoria, idTarjeta, idMetodoPago, empresa])
+      const result = await client.query('INSERT INTO ingreso (id_usuario, concepto, descripcion, valor, ingreso_fijo, fecha) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', [idUsuario, concepto, descripcion, valor, ingresoFijo, fecha])
       return result.rows[0]
     } catch (error) {
       console.error(error)
@@ -38,8 +38,8 @@ export class IngresoModel {
   }
 
   static async update ({ id, input }) {
-    const { concepto, valor, fecha, cuotas, descripcion, ingresoFijo, idCategoria, idTarjeta, idMetodoPago, empresa } = input
-    const result = await client.query('UPDATE ingreso SET concepto = COALESCE($1, concepto), valor = COALESCE($2, valor), fecha = COALESCE($3, fecha), cuotas = COALESCE($4, cuotas), descripcion = COALESCE($5, descripcion), ingreso_fijo = COALESCE($6, ingreso_fijo), id_categoria = COALESCE($7, id_categoria), id_tarjeta = COALESCE($8, id_tarjeta), id_metodo_pago = COALESCE($9, id_metodo_pago), empresa = COALESCE($10, empresa) WHERE id_ingreso = $11 RETURNING *', [concepto, valor, fecha, cuotas, descripcion, ingresoFijo, idCategoria, idTarjeta, idMetodoPago, empresa, id])
+    const { concepto, descripcion, valor, ingresoFijo, fecha } = input
+    const result = await client.query('UPDATE ingreso SET concepto = $1, descripcion = $2, valor = $3, ingreso_fijo = $4, fecha = $5 WHERE id_ingreso = $6 RETURNING *', [concepto, descripcion, valor, ingresoFijo, fecha, id])
     return result.rows[0]
   }
 
