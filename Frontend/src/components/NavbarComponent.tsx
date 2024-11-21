@@ -15,7 +15,7 @@ function NavbarComponent () {
         <NavbarBrand>
           <Link to={'/'} className="flex items-center gap-2">
             <img src={logo} alt="Logo" className="h-16" />
-            <h1 className="text-lg font-bold">DuoExpense</h1>
+            <h1 className="sm:block hidden text-lg font-bold">DuoExpense</h1>
           </Link>
         </NavbarBrand>
         <NavbarContent className="sm:flex gap-4" justify="center">

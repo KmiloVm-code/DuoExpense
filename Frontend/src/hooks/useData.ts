@@ -43,20 +43,8 @@ export const useData = <T extends { id: number }, >(userid: string, services: us
 
   const updateData = async (updatedData: T) => {
     try {
-      const updated = await services.updateDataService(updatedData)
-
-      const formattedData = {
-        ...updatedData
-      }
-
-      console.log(formattedData)
-
-      setData((prevData: T[]) => {
-        const dataCopy = [...prevData]
-        const index = dataCopy.findIndex((item) => item.id === updated.id)
-        dataCopy[index] = formattedData
-        return dataCopy
-      })
+      await services.updateDataService(updatedData)
+      getData()
     } catch {
       setError('Error al actualizar el registro')
     }
@@ -65,7 +53,7 @@ export const useData = <T extends { id: number }, >(userid: string, services: us
   const deleteData = async (id: number) => {
     try {
       await services.deleteDataService({ id })
-      setData((prevData: T[]) => prevData.filter((item) => item.id !== id))
+      getData()
     } catch {
       setError('Error al eliminar el registro')
     }

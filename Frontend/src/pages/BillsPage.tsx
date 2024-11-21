@@ -1,4 +1,4 @@
-import { Button, useDisclosure } from '@nextui-org/react'
+import { Button, Checkbox, DatePicker, Select, SelectItem, useDisclosure } from '@nextui-org/react'
 import { Input } from '@nextui-org/input'
 
 import { useAuth } from '../contexts/AuthContext'
@@ -7,10 +7,10 @@ import { useData } from '../hooks/useData.ts'
 import { convertValue, convertDate } from '../utils/formatters.ts'
 
 import TableComponent from '../components/TableComponent.tsx'
-import ModalNewBill from '../components/ModalNewBillComponent'
+import ModalFormComponent from '../components/ModalFormComponent.tsx'
 
 import { Bill } from '../Models/BillsModel.ts'
-import { Key, useMemo, useState } from 'react'
+import { Key, useCallback, useMemo, useState } from 'react'
 import { usePaymentMethod } from '../hooks/usePaymentMethod.ts'
 import ModalErrorComponent from '../components/ModalErrorComponent.tsx'
 
@@ -21,42 +21,72 @@ import {
   updateBillService
 } from '../services/bills.ts'
 
+import { useFormHandler } from '../hooks/useFormHandler.ts'
+import { parseDate } from '@internationalized/date'
+import { useCategories } from '../hooks/UseCategories.ts'
+
+const services = {
+  getDataService: getBillsService,
+  createDataService: createBillService,
+  updateDataService: updateBillService,
+  deleteDataService: deleteBillService
+}
+
 function BillsPage () {
   const { user } = useAuth()
   const idUsuario = user?.id_usuario ?? ''
 
-  const services = useMemo(() => ({
-    getDataService: getBillsService,
-    createDataService: createBillService,
-    updateDataService: updateBillService,
-    deleteDataService: deleteBillService
-  }), [])
-
-  const { data: bills, error, createData, updateData, deleteData, searchData, handleErrors } = useData<Bill>(idUsuario, services)
+  const { data: bills, createData, updateData, deleteData, searchData } = useData<Bill>(idUsuario, services)
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
   const [billToEdit, setBillToEdit] = useState<Bill | null>(null)
-  const { paymentMethod } = usePaymentMethod()
+  const { showCreditCard, handlePaymentChange, paymentMethod } = usePaymentMethod()
+  const { categories } = useCategories()
 
-  const editOpen = (bill: Bill) => {
+  const initialData: Bill = useMemo(() => ({
+    id: 0,
+    id_usuario: idUsuario,
+    concepto: '',
+    descripcion: '',
+    valor: 0,
+    empresa: '',
+    id_categoria: 0,
+    id_metodo_pago: 0,
+    cuotas: null,
+    id_tarjeta: null,
+    fecha: new Date().toISOString()
+  }), [idUsuario])
+
+  const { dataToEdit, handleSubmit, handleErrors, error, isSubmitting } = useFormHandler<Bill>({
+    initialData,
+    onSubmit: async (data) => {
+      await handleBill(data)
+    },
+    dataToEdit: billToEdit
+  })
+
+  const editOpen = useCallback((bill: Bill) => {
     setBillToEdit(bill)
     onOpen()
-  }
+  }, [onOpen])
 
-  const newOpen = () => {
+  const newOpen = useCallback(() => {
     setBillToEdit(null)
     onOpen()
-  }
+  }, [onOpen])
 
-  const handleBill = async (bill: Bill): Promise<void> => {
-    if (bill.id_gasto) {
-      await updateData(bill)
-    } else {
-      await createData(bill)
-    }
-    onOpenChange()
-  }
+  const handleBill = useCallback(
+    async (bill: Bill): Promise<void> => {
+      if (bill.id_gasto) {
+        await updateData(bill)
+      } else {
+        await createData(bill)
+      }
+      onOpenChange()
+    },
+    [createData, updateData, onOpenChange]
+  )
 
-  const columns = [
+  const columns = useMemo(() => [
     { key: 'concepto', label: 'Concepto' },
     { key: 'descripcion', label: 'Descripcion' },
     { key: 'gasto_fijo', label: 'Gasto Fijo' },
@@ -64,29 +94,83 @@ function BillsPage () {
     { key: 'valor', label: 'Valor' },
     { key: 'fecha', label: 'Fecha' },
     { key: 'actions', label: 'Acciones' }
-  ]
+  ], [])
 
-  const getId = (item: Bill) => item.id_gasto ?? 0
+  const getId = useCallback((item: Bill) => item.id_gasto ?? 0, [])
 
-  const method = (id: Key) => {
-    return paymentMethod.find((metodo) => metodo.id === id)?.nombre
-  }
+  const method = useCallback(
+    (id: Key) => paymentMethod.find((metodo) => metodo.id === id)?.nombre,
+    [paymentMethod]
+  )
 
-  const renderItems = (item: Bill, columnKey: Key) => {
-    switch (columnKey) {
-      case 'gasto_fijo':
-        return <span>{item.gasto_fijo ? 'Si' : 'No'}</span>
-      case 'id_metodo_pago':
-        return <span>{item.id_metodo_pago !== undefined ? method(item.id_metodo_pago) : 'N/A'}</span>
-      default:
-        return <span>{String(item[columnKey as keyof Bill])}</span>
-    }
-  }
+  const renderItems = useCallback(
+    (item: Bill, columnKey: Key) => {
+      switch (columnKey) {
+        case 'gasto_fijo':
+          return <span>{item.gasto_fijo ? 'Si' : 'No'}</span>
+        case 'id_metodo_pago':
+          return <span>{item.id_metodo_pago !== undefined ? method(item.id_metodo_pago) : 'N/A'}</span>
+        default:
+          return <span>{String(item[columnKey as keyof Bill])}</span>
+      }
+    },
+    [method]
+  )
+
+  const renderFormFields = useCallback(() => {
+    return (
+      <>
+        <Input type="text" name="concepto" placeholder="Concepto" defaultValue={dataToEdit?.concepto} required />
+        <DatePicker name="fecha" label="Fecha" labelPlacement='inside' defaultValue={parseDate(dataToEdit?.fecha?.split('T')[0] || new Date().toISOString().split('T')[0])} />
+        <Input type="text" name="descripcion" placeholder="Descripcion" defaultValue={dataToEdit?.descripcion} />
+        <Input type="number" onWheel={(e) => e.currentTarget.blur()} name="valor" placeholder="Valor" defaultValue={dataToEdit?.valor?.toString()} required
+          startContent={
+            <div className="pointer-events-none flex items-center">
+              <span className="text-default-400 text-small">$</span>
+            </div>
+          }
+        />
+        <Input type="text" name="empresa" placeholder="Empresa" defaultValue={dataToEdit?.empresa} />
+        <Select name="id_categoria" label="Categoria" labelPlacement='inside' defaultSelectedKeys={dataToEdit?.id_categoria ? [dataToEdit?.id_categoria.toString()] : []} isRequired items={categories}>
+          {(category) => <SelectItem key={category.id}>{category.nombre}</SelectItem>}
+        </Select>
+
+        <Select name="id_metodo_pago" label="Metodo de Pago" labelPlacement='inside' isRequired items={paymentMethod} onChange={handlePaymentChange} defaultSelectedKeys={dataToEdit?.id_metodo_pago ? [dataToEdit?.id_metodo_pago.toString()] : []}>
+          {(method) => <SelectItem key={method.id}>{method.nombre}</SelectItem>}
+        </Select>
+
+        {showCreditCard && (
+          <div className="flex flex-col gap-5">
+            <Input type="number" onWheel={(e) => e.currentTarget.blur()} name="cuotas" placeholder="Cuotas" defaultValue={dataToEdit?.cuotas?.toString()} required />
+            <Input type="number" onWheel={(e) => e.currentTarget.blur()} name="id_tarjeta" placeholder="Tarjeta" defaultValue={dataToEdit?.id_tarjeta?.toString()} required />
+          </div>
+        )}
+
+        <Checkbox type='checkbox' name='gasto_fijo' color='secondary' defaultSelected={dataToEdit?.gasto_fijo} >
+          Gasto Fijo
+        </Checkbox>
+      </>
+    )
+  }, [dataToEdit, showCreditCard, categories, paymentMethod, handlePaymentChange])
+
+  const renderButton = useCallback(
+    (onClose: () => void) => (
+      <>
+        <Button type="submit" color="secondary" disabled={isSubmitting} isLoading={isSubmitting}>
+          {billToEdit ? 'Guardar Cambios' : 'Agregar Gasto'}
+        </Button>
+        <Button type="reset" color="danger" variant="bordered" onPress={onClose}>
+          Cancelar
+        </Button>
+      </>
+    ),
+    [billToEdit, isSubmitting]
+  )
 
   return (
     <main className="flex flex-col items-center justify-center w-full m-auto gap-8 p-8">
 
-      {error && <ModalErrorComponent isOpen={!!error} handleErrors={handleErrors} />}
+      {typeof error === 'string' && <ModalErrorComponent isOpen={!!error} handleErrors={handleErrors} />}
 
       <section className="flex gap-2 justify-between w-full">
         <div className="md:w-1/3">
@@ -104,22 +188,23 @@ function BillsPage () {
         </Button>
       </section>
 
-      <ModalNewBill
+      <ModalFormComponent<Bill>
         isOpen={isOpen}
-        addNewBill={handleBill}
         onOpenChange={onOpenChange}
-        billToEdit={billToEdit}
+        renderFormFields={renderFormFields}
+        renderButtons={renderButton}
+        submit={handleSubmit}
       />
 
       <TableComponent<Bill>
-      data={bills}
-      toggleModal={editOpen}
-      dataDelete={deleteData}
-      columns={columns}
-      formatDate={convertDate}
-      formatValue={convertValue}
-      getId={getId}
-      renderItems={renderItems}/>
+        data={bills}
+        toggleModal={editOpen}
+        dataDelete={deleteData}
+        columns={columns}
+        formatDate={convertDate}
+        formatValue={convertValue}
+        getId={getId}
+        renderItems={renderItems} />
     </main>
   )
 }

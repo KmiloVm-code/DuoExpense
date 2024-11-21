@@ -6,5 +6,5 @@ export interface Icome {
   descripcion: string;
   valor: string;
   ingreso_fijo: boolean;
-  fecha: Date;
+  fecha: string;
 }
