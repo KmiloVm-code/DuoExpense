@@ -1,41 +1,57 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import EmailComponent from '../components/EmailComponent'
 import PasswordComponent from '../components/PasswordComponent'
 import { useAuth } from '../contexts/AuthContext'
 import { loginService } from '../services/auth'
+import { Button } from '@nextui-org/react'
 
 function LoginPage () {
-  const [email, setEmail] = useState<string>('')
-  const [password, setPassword] = useState<string>('')
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
   const { login } = useAuth()
   const navigate = useNavigate()
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault()
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    setLoading(true)
+    e.preventDefault()
+    const email = e.currentTarget.email.value
+    const password = e.currentTarget.password.value
 
-    const data = await loginService(email, password)
-    if (data.publicUser) {
-      login(data.publicUser)
-      navigate('/')
+    try {
+      const user = await loginService(email, password)
+      setLoading(false)
+      if (user.publicUser) {
+        login(user.publicUser)
+        navigate('/')
+      }
+    } catch {
+      setError('Usuario o contraseña incorrectos')
     }
   }
 
   return (
-    <div className="flex flex-col items-center justify-center w-1/2 m-auto h-screen gap-5">
-      <h1 className="text-4xl font-bold">Login</h1>
+    <main className="flex flex-col items-center justify-center min-h-screen">
+      <section className="w-full max-w-sm p-5 space-y-5">
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        <h1 className="text-2xl font-semibold text-center">Iniciar sesión</h1>
 
-        <EmailComponent email={email} setEmail={setEmail} />
+        <form onSubmit={handleSubmit} className="flex flex-col items-center gap-5">
+          <EmailComponent />
+          <PasswordComponent />
+          {error && <div className="text-red-500">{error}</div>}
+          <div className="w-full text-right text-sm text-purple-500">
+            <Link to="/forgot-password">Olvidaste tu contraseña?</Link>
+          </div>
+          <Button type="submit" color='secondary' fullWidth className='mt-5' isLoading={loading} isDisabled={loading}>Ingresar</Button>
+        </form>
 
-        <PasswordComponent password={password} setPassword={setPassword} />
+        <div className="text-center text-sm">
+          <p>Usuario nuevo? <Link to="/register" className="text-purple-500">Crear cuenta</Link></p>
+        </div>
 
-        <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Login
-        </button>
-      </form>
-    </div>
+      </section>
+    </main>
   )
 }
 

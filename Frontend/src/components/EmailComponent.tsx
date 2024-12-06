@@ -1,38 +1,30 @@
 import { Input } from '@nextui-org/input'
-import { useMemo, useState, useRef } from 'react'
+import { useState, useEffect } from 'react'
 
-function EmailComponent ({ email, setEmail }: { email: string, setEmail: (email: string) => void }) {
-  const validateEmail = (email: string) => email.match(/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/)
-
+function EmailComponent () {
+  const [email, setEmail] = useState<string>('')
   const [isInvalid, setIsInvalid] = useState<boolean>(false)
 
-  const isFirstRender = useRef(true)
+  const validateEmail = (email: string) => email.match(/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/)
 
-  useMemo(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = email === ''
-      return
-    }
-
+  useEffect(() => {
+    if (email === '') return
     setIsInvalid(!validateEmail(email))
   }, [email])
 
   return (
     <Input
       value={email}
-      onChange={(e) => setEmail(e.target.value)}
       isRequired
+      label="Correo electrónico"
       type="email"
-      label="Email"
-      variant="bordered"
-      placeholder="Enter your email"
+      variant="underlined"
       isInvalid={isInvalid}
-      color={isInvalid ? 'danger' : undefined}
-      errorMessage="Invalid email address"
+      errorMessage="Correo electrónico inválido"
       onValueChange={setEmail}
       isClearable
       onClear={() => setEmail('')}
-      className="max-w-xs"
+      name='email'
     />
   )
 }

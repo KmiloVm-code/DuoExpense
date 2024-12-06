@@ -1,16 +1,27 @@
 import { Input } from '@nextui-org/input'
+import { useState, useEffect } from 'react'
 
-function PasswordComponent ({ password, setPassword }: { password: string, setPassword: (password: string) => void }) {
+function PasswordComponent () {
+  const [password, setPassword] = useState<string>('')
+  const validatePassword = (password: string) => password.length >= 8
+  const [error, setError] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (password === '') return
+    setError(!validatePassword(password))
+  }, [password])
+
   return (
     <Input
         isRequired
         value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        onValueChange={setPassword}
         type="password"
-        label="Password"
-        placeholder="Enter your password"
-        variant="bordered"
-        className="max-w-xs"
+        label="Contraseña"
+        variant="underlined"
+        name='password'
+        isInvalid={error}
+        errorMessage="La contraseña debe tener al menos 8 caracteres"
       />
   )
 }
