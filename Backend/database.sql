@@ -27,7 +27,7 @@ CREATE TABLE IngresoAdicional (
 
 CREATE TABLE MetodoPago (
     id_metodo_pago SERIAL PRIMARY KEY,
-    descripcion VARCHAR(50) NOT NULL
+    nombre VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE EntidadBancaria (

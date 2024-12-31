@@ -6,14 +6,29 @@ export class IngresoModel {
       let query = 'SELECT * FROM ingreso WHERE 1=1'
       const values = []
 
-      for (const key in filters) {
-        if (key === 'id_usuario' || key === 'id_ingreso') {
-          query += ` AND ${key} = $${values.length + 1}`
-          values.push(filters[key])
-        } else {
-          query += ` AND ${key} ILIKE $${values.length + 1}`
-          values.push(`%${filters[key]}%`)
-        }
+      if (filters.id_usuario) {
+        query += ` AND id_usuario = $${values.length + 1}`
+        values.push(filters.id_usuario)
+      }
+
+      if (filters.id_ingreso) {
+        query += ` AND id_ingreso = $${values.length + 1}`
+        values.push(filters.id_ingreso)
+      }
+
+      if (filters.startDate) {
+        query += ` AND fecha >= $${values.length + 1}`
+        values.push(filters.startDate)
+      }
+
+      if (filters.endDate) {
+        query += ` AND fecha <= $${values.length + 1}`
+        values.push(filters.endDate)
+      }
+
+      for (const key in filters.otherFilters) {
+        query += ` AND ${key} ILIKE $${values.length + 1}`
+        values.push(`%${filters.otherFilters[key]}%`)
       }
 
       console.log(query, values)
