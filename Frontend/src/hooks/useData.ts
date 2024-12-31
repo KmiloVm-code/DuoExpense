@@ -1,36 +1,69 @@
 import { useState, useEffect, useCallback } from 'react'
 import debounce from 'just-debounce-it'
 
+import { DateValue } from '@internationalized/date'
+import { RangeValue } from '@nextui-org/react'
+
 interface useDataProps<T> {
   getDataService: (params: { filters?: string }) => Promise<T[]>
   createDataService: (data: T) => Promise<T>
   updateDataService: (data: T) => Promise<T>
   deleteDataService: (params: { id: number }) => Promise<void>
-  filters?: string
 }
 
-export const useData = <T extends { id: number }, >(userid: string, services: useDataProps<T>) => {
+export const useData = <T extends { id: number }, >(userid: string, services: useDataProps<T>, pickerValue: RangeValue<DateValue>) => {
   const [data, setData] = useState<T[]>([])
   const [error, setError] = useState<string | null>(null)
 
   const getData = useCallback(async () => {
     try {
       if (!userid) return
-      const fetchedData = await services.getDataService({ filters: `id_usuario=${userid}${services.filters || ''}` })
+      const filters = new URLSearchParams({
+        id_usuario: userid,
+        startDate: new Date(pickerValue.start.toString()).toISOString(),
+        endDate: new Date(pickerValue.end.toString()).toISOString()
+      }).toString()
+      console.log('filters: ', filters)
+      const fetchedData = await services.getDataService({ filters })
       fetchedData.sort((a, b) => a.id - b.id)
       setData(fetchedData)
-      console.log(fetchedData)
       setError(null)
     } catch {
       setError('Error al cargar los datos')
     }
-  }, [userid, services])
+  }, [userid, services, pickerValue])
 
   useEffect(() => {
     if (userid) {
       getData()
     }
   }, [getData, userid])
+
+  // const getDataByDate = useCallback(async (start: Date, end: Date) => {
+  //   try {
+  //     if (!userid) return
+  //     console.log('filters: ', services?.filters)
+  //     const filters = new URLSearchParams({
+  //       filters: services?.filters || ''
+  //       // id_usuario: userid,
+  //       // startDate: start.toISOString(),
+  //       // endDate: end.toISOString()
+  //     }).toString()
+  //     console.log(filters)
+  //     const fetchedData = await services.getDataService({ filters })
+  //     fetchedData.sort((a, b) => a.id - b.id)
+  //     setData(fetchedData)
+  //     setError(null)
+  //   } catch {
+  //     setError('Error al cargar los datos')
+  //   }
+  // }, [userid, services])
+
+  // useEffect(() => {
+  //   if (userid) {
+  //     getDataByDate(new Date(), new Date())
+  //   }
+  // }, [getDataByDate, userid])
 
   const createData = async (newData: T) => {
     try {

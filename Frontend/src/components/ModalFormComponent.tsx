@@ -14,7 +14,7 @@ const ModalFormComponent = <T, >({ isOpen, onOpenChange, renderFormFields, rende
   if (!isOpen) return null
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior='inside'>
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior='inside' backdrop='blur' className='w-full max-w-lg'>
       <form onSubmit={submit}>
         <ModalContent>
           {(onClose) => (

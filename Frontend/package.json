@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.1.8",
+    "@hello-pangea/dnd": "^17.0.0",
     "@heroicons/react": "^2.1.5",
     "@internationalized/date": "^3.5.6",
     "@nextui-org/avatar": "^2.0.33",
@@ -20,10 +21,13 @@
     "@nextui-org/navbar": "^2.0.37",
     "@nextui-org/react": "^2.4.8",
     "@nextui-org/table": "^2.0.40",
+    "chart.js": "^4.4.7",
     "framer-motion": "^11.9.0",
     "just-debounce-it": "^3.2.0",
     "react": "^18.3.1",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.3.1",
+    "react-icons": "^5.4.0",
     "react-router-dom": "^6.26.2"
   },
   "devDependencies": {

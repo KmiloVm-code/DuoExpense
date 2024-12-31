@@ -5,31 +5,32 @@ import { Button, Checkbox, DatePicker, Input, ModalFooter, useDisclosure } from 
 import { convertValue, convertDate } from '../utils/formatters.ts'
 import { Icome } from '../Models/IcomeModel.ts'
 
-import {
-  createIcomeService,
-  deleteIcomeService,
-  getIncomeService,
-  updateIcomeService
-} from '../services/incomes.ts'
+// import {
+//   createIcomeService,
+//   deleteIcomeService,
+//   getIncomeService,
+//   updateIcomeService
+// } from '../services/incomes.ts'
 
-import { useData } from '../hooks/useData.ts'
+// import { useData } from '../hooks/useData.ts'
 import ModalErrorComponent from '../components/ModalErrorComponent.tsx'
 import { useFormHandler } from '../hooks/useFormHandler.ts'
 import { parseDate } from '@internationalized/date'
 import ModalFormComponent from '../components/ModalFormComponent.tsx'
+import { useDataContext } from '../contexts/DataContext.tsx'
 
-const services = {
-  getDataService: getIncomeService,
-  createDataService: createIcomeService,
-  updateDataService: updateIcomeService,
-  deleteDataService: deleteIcomeService
-}
+// const services = {
+//   getDataService: getIncomeService,
+//   createDataService: createIcomeService,
+//   updateDataService: updateIcomeService,
+//   deleteDataService: deleteIcomeService
+// }
 
 const IcomePage = () => {
   const { user } = useAuth()
   const idUsuario = user?.id_usuario ?? ''
-
-  const { data: icome, createData, updateData, deleteData, searchData } = useData<Icome>(idUsuario, services)
+  const { data: icome, createData, updateData, deleteData, searchData } = useDataContext().icomeData
+  // const { data: icome, createData, updateData, deleteData, searchData } = useData<Icome>(idUsuario, services)
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
   const [incomeToEdit, setIncomeToEdit] = useState<Icome | null>(null)
 

@@ -3,7 +3,7 @@ import { Input } from '@nextui-org/input'
 
 import { useAuth } from '../contexts/AuthContext'
 
-import { useData } from '../hooks/useData.ts'
+// import { useData } from '../hooks/useData.ts'
 import { convertValue, convertDate } from '../utils/formatters.ts'
 
 import TableComponent from '../components/TableComponent.tsx'
@@ -14,29 +14,30 @@ import { Key, useCallback, useMemo, useState } from 'react'
 import { usePaymentMethod } from '../hooks/usePaymentMethod.ts'
 import ModalErrorComponent from '../components/ModalErrorComponent.tsx'
 
-import {
-  createBillService,
-  deleteBillService,
-  getBillsService,
-  updateBillService
-} from '../services/bills.ts'
+// import {
+//   createBillService,
+//   deleteBillService,
+//   getBillsService,
+//   updateBillService
+// } from '../services/bills.ts'
 
 import { useFormHandler } from '../hooks/useFormHandler.ts'
 import { parseDate } from '@internationalized/date'
 import { useCategories } from '../hooks/UseCategories.ts'
+import { useDataContext } from '../contexts/DataContext.tsx'
 
-const services = {
-  getDataService: getBillsService,
-  createDataService: createBillService,
-  updateDataService: updateBillService,
-  deleteDataService: deleteBillService
-}
+// const services = {
+//   getDataService: getBillsService,
+//   createDataService: createBillService,
+//   updateDataService: updateBillService,
+//   deleteDataService: deleteBillService
+// }
 
 function BillsPage () {
   const { user } = useAuth()
   const idUsuario = user?.id_usuario ?? ''
-
-  const { data: bills, createData, updateData, deleteData, searchData } = useData<Bill>(idUsuario, services)
+  const { data: bills, createData, updateData, deleteData, searchData } = useDataContext().billsData
+  // const { data: bills, createData, updateData, deleteData, searchData } = useData<Bill>(idUsuario, services)
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
   const [billToEdit, setBillToEdit] = useState<Bill | null>(null)
   const { showCreditCard, handlePaymentChange, paymentMethod } = usePaymentMethod()
