@@ -134,7 +134,7 @@ function DashboardPage () {
             {statsData.map((stat, index) => (
               <div
                 key={index}
-                className="bg-white p-4 rounded-lg shadow-md text-center flex flex-col items-center"
+                className="bg-white p-4 rounded-lg border-gray-200 border-solid border-small shadow-md text-center flex flex-col items-center"
               >
                 {stat.icon}
                 <h3 className="text-gray-500 text-sm mt-2">{stat.title}</h3>
@@ -150,7 +150,7 @@ function DashboardPage () {
               {filterActivityData().map((activity) => (
                 <div
                   key={activity.id}
-                  className="flex justify-between items-center bg-white p-4 rounded-lg shadow-md text-wrap"
+                  className="flex justify-between items-center bg-white p-4 rounded-lg shadow-md border-gray-200 border-solid border-small text-wrap"
                 >
                   <span className="text-gray-800">{activity.text}</span>
                   <div className="text-right">
@@ -166,7 +166,7 @@ function DashboardPage () {
         )
       case 'chart':
         return (
-          <div className="bg-white p-4 rounded-lg shadow-md overflow-x-auto">
+          <div className="bg-white p-4 rounded-lg shadow-md border-gray-200 border-solid border-small overflow-x-auto">
             <Line data={chartData} options={{ responsive: true, maintainAspectRatio: true }} />
           </div>
         )
@@ -177,7 +177,7 @@ function DashboardPage () {
 
   return (
 
-        <main className="flex-1 p-4 md:p-6 w-full">
+        <main className="relative top-36 lg:left-64 h-screen p-4 lg:w-[calc(100%-250px)]">
 
           <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="dashboard-panels">
@@ -198,7 +198,7 @@ function DashboardPage () {
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          className="bg-white rounded-lg shadow-md p-4 md:p-6"
+                          className="bg-white rounded-lg shadow-md border-gray-200 border-solid border-small p-4 md:p-6"
                         >
                           <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-4">
                             {panel.title}

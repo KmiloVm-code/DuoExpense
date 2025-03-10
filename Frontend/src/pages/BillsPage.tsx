@@ -169,7 +169,7 @@ function BillsPage () {
   )
 
   return (
-    <main className="flex flex-col items-center justify-center w-full m-auto gap-8 p-8">
+    <main className="relative flex flex-col gap-8 top-36 lg:left-64 h-screen p-4 lg:w-[calc(100%-250px)]">
 
       {typeof error === 'string' && <ModalErrorComponent isOpen={!!error} handleErrors={handleErrors} />}
 

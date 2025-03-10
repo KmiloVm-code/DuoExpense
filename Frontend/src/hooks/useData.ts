@@ -39,32 +39,6 @@ export const useData = <T extends { id: number }, >(userid: string, services: us
     }
   }, [getData, userid])
 
-  // const getDataByDate = useCallback(async (start: Date, end: Date) => {
-  //   try {
-  //     if (!userid) return
-  //     console.log('filters: ', services?.filters)
-  //     const filters = new URLSearchParams({
-  //       filters: services?.filters || ''
-  //       // id_usuario: userid,
-  //       // startDate: start.toISOString(),
-  //       // endDate: end.toISOString()
-  //     }).toString()
-  //     console.log(filters)
-  //     const fetchedData = await services.getDataService({ filters })
-  //     fetchedData.sort((a, b) => a.id - b.id)
-  //     setData(fetchedData)
-  //     setError(null)
-  //   } catch {
-  //     setError('Error al cargar los datos')
-  //   }
-  // }, [userid, services])
-
-  // useEffect(() => {
-  //   if (userid) {
-  //     getDataByDate(new Date(), new Date())
-  //   }
-  // }, [getDataByDate, userid])
-
   const createData = async (newData: T) => {
     try {
       const createdData = await services.createDataService(newData)

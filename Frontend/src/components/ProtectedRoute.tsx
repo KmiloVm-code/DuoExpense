@@ -16,8 +16,7 @@ export const ProtectedRoute = ({ children, redirectTo = '/login' }: ProtectedRou
 
   return children ||
     <>
-      <NavbarComponent>
-        <Outlet />
-      </NavbarComponent>
+      <NavbarComponent />
+      <Outlet />
     </>
 }
