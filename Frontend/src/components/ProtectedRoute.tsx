@@ -1,6 +1,6 @@
 import { useAuth } from '../contexts/AuthContext'
 import { Navigate, Outlet } from 'react-router-dom'
-import NavbarComponent from './NavbarComponent'
+import Layout from '../layout'
 
 interface ProtectedRouteProps {
   redirectTo?: string;
@@ -16,7 +16,8 @@ export const ProtectedRoute = ({ children, redirectTo = '/login' }: ProtectedRou
 
   return children ||
     <>
-      <NavbarComponent />
-      <Outlet />
+      <Layout>
+        <Outlet />
+      </Layout>
     </>
 }

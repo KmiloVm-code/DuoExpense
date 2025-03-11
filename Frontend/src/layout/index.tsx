@@ -1,8 +1,43 @@
-const Layout = () => {
+import NavbarComponent from '../components/NavbarComponent'
+import PropTypes from 'prop-types'
+import Sidebar from '../components/Sidebar'
+import { useState } from 'react'
+
+interface LayoutProps {
+  children: React.ReactNode
+}
+
+const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  const handleSidebar = () => {
+    setSidebarOpen(!sidebarOpen)
+    console.log(sidebarOpen)
+  }
+
+  const sideBarHandleRender = () => {
+    return sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+  }
+
   return (
-    <>
-    </>
+    <div className="grid grid-cols-1 lg:grid-cols-[250px,1fr] grid-rows-[140px,1fr] h-screen">
+      <aside className={`fixed lg:sticky h-full top-0 w-2/3 lg:w-auto lg:col-start-1 lg:col-end-2 row-start-1 lg:row-end-3 bg-gray-200 shadow-lg z-20 transform lg:transform-none transition-transform duration-300 ${sideBarHandleRender()}`} aria-label="Sidebar">
+        <Sidebar handle = {handleSidebar}/>
+      </aside>
+
+      <header className="sticky top-0">
+        <NavbarComponent handle={handleSidebar} />
+      </header>
+
+      <main className='lg:col-start-2 bg-gray-200 p-4' aria-label="Main content">
+        {children}
+      </main>
+    </div>
   )
+}
+
+Layout.propTypes = {
+  children: PropTypes.node.isRequired
 }
 
 export default Layout

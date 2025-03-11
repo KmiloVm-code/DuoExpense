@@ -126,8 +126,8 @@ const IcomePage = () => {
   }, [isSubmitting, incomeToEdit])
 
   return (
-    <main className="relative top-36 flex flex-col gap-8 lg:left-64 h-screen p-4 lg:w-[calc(100%-250px)]">
-      <section className="flex gap-2 justify-between w-full">
+    <>
+      <section className="flex gap-2 mb-4 justify-between w-full">
         <div className="md:w-1/3">
           <Input
             placeholder="Buscar"
@@ -162,7 +162,7 @@ const IcomePage = () => {
         formatValue={convertValue}
         renderItems={renderItems}
       />
-    </main>
+    </>
   )
 }
 

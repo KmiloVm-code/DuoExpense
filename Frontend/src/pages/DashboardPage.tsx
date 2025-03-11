@@ -176,13 +176,10 @@ function DashboardPage () {
   }
 
   return (
-
-        <main className="relative top-36 lg:left-64 h-screen p-4 lg:w-[calc(100%-250px)]">
-
           <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="dashboard-panels">
               {(provided) => (
-                <div
+                <section
                   {...provided.droppableProps}
                   ref={provided.innerRef}
                   className="space-y-6"
@@ -194,26 +191,27 @@ function DashboardPage () {
                       index={index}
                     >
                       {(provided) => (
-                        <div
+                        <article
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
                           className="bg-white rounded-lg shadow-md border-gray-200 border-solid border-small p-4 md:p-6"
                         >
+                          <head className='flex justify-between items-center'>
                           <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-4">
                             {panel.title}
                           </h2>
+                          </head>
                           {renderPanel(panel)}
-                        </div>
+                        </article>
                       )}
                     </Draggable>
                   ))}
                   {provided.placeholder}
-                </div>
+                </section>
               )}
             </Droppable>
           </DragDropContext>
-        </main>
   )
 }
 

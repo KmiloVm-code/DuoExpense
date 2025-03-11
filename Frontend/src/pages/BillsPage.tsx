@@ -169,11 +169,11 @@ function BillsPage () {
   )
 
   return (
-    <main className="relative flex flex-col gap-8 top-36 lg:left-64 h-screen p-4 lg:w-[calc(100%-250px)]">
+    <>
 
       {typeof error === 'string' && <ModalErrorComponent isOpen={!!error} handleErrors={handleErrors} />}
 
-      <section className="flex gap-2 justify-between w-full">
+      <section className="flex gap-2 mb-4 justify-between w-full">
         <div className="md:w-1/3">
           <Input
             placeholder="Buscar"
@@ -206,7 +206,7 @@ function BillsPage () {
         formatValue={convertValue}
         getId={getId}
         renderItems={renderItems} />
-    </main>
+    </>
   )
 }
 
