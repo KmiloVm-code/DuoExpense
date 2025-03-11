@@ -64,7 +64,9 @@ export class UserModel {
         return 'User does not exist'
       }
 
-      const result = await client.query('UPDATE usuario SET nombre = COALESCE($1, nombre), email = COALESCE($2, email), pass = COALESCE($3, pass) WHERE id_usuario = $4 RETURNING *', [name, email, password, id])
+      const hashedPassword = await hashPassword(password)
+
+      const result = await client.query('UPDATE usuario SET nombre = COALESCE($1, nombre), email = COALESCE($2, email), pass = COALESCE($3, pass) WHERE id_usuario = $4 RETURNING *', [name, email, hashedPassword, id])
       return result.rows[0]
     } catch (error) {
       console.error(error)
