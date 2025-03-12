@@ -1,15 +1,14 @@
 {
   "extends": [
     "standard",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:react/recommended",
-    "plugin:react-hooks/recommended"
-
+    "plugin:prettier/recommended"
   ],
   "parser": "@typescript-eslint/parser",
   "plugins": [
+    "react",
     "@typescript-eslint",
-    "react"
+    "react-hooks",
+    "prettier"
   ],
   "parserOptions": {
     "ecmaVersion": 2020,
@@ -20,7 +19,25 @@
     }
   },
   "rules": {
-    "react/react-in-jsx-scope": "off"
+    "react/react-in-jsx-scope": "off",
+    //no punto y comas
+    "semi": ["error", "never"],
+    //no espacios en blanco al final de la linea
+    "no-trailing-spaces": "error",
+    //no comillas dobles
+    "quotes": ["error", "single"],
+    "no-unused-vars": "warn",
+    
+    "prettier/prettier": [
+      "error",
+      {
+        "semi": false,
+        "singleQuote": true,
+        "trailingComma": "none",
+        "endOfLine": "auto",
+        "no-unused-vars": "warn"
+      }
+    ]
   }
 
 }

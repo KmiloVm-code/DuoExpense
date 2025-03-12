@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "bcrypt": "5.1.1",
-    "cookie-parser": "1.4.6",
+    "cookie-parser": "^1.4.7",
     "express": "^4.21.0",
     "jsonwebtoken": "9.0.2",
     "pg": "8.12.0",
