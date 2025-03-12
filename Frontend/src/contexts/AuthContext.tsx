@@ -1,17 +1,17 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
 interface User {
-  nombre?: string;
-  id_usuario?: string;
-  email?: string;
+  nombre?: string
+  id_usuario?: string
+  email?: string
 }
 
 interface AuthContextProps {
-  isAuthenticated: boolean;
-  loading: boolean;
-  login: (user: User) => void;
-  logout: () => void;
-  user: User;
+  isAuthenticated: boolean
+  loading: boolean
+  login: (user: User) => void
+  logout: () => void
+  user: User
 }
 
 const API_URL_CHECK_SESSION = `${import.meta.env.VITE_API_URL}/auth/check-session`
@@ -71,28 +71,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await fetch(API_URL_LOGOUT, {
       method: 'post',
       credentials: 'include'
-    }).then(() => {
-      console.log('Logged out')
-    }).catch((error) => {
-      console.log(error)
     })
+      .then(() => {
+        console.log('Logged out')
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   }
 
-  const value = useMemo(() => ({
-    isAuthenticated,
-    login,
-    logout,
-    loading,
-    user
-  }), [isAuthenticated, loading, user])
+  const value = useMemo(
+    () => ({
+      isAuthenticated,
+      login,
+      logout,
+      loading,
+      user
+    }),
+    [isAuthenticated, loading, user]
+  )
 
   if (loading) {
     return null
   }
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  )
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

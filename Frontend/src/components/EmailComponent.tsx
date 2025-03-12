@@ -1,11 +1,12 @@
 import { Input } from '@nextui-org/input'
 import { useState, useEffect } from 'react'
 
-function EmailComponent () {
+function EmailComponent() {
   const [email, setEmail] = useState<string>('')
   const [isInvalid, setIsInvalid] = useState<boolean>(false)
 
-  const validateEmail = (email: string) => email.match(/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/)
+  const validateEmail = (email: string) =>
+    email.match(/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/)
 
   useEffect(() => {
     if (email === '') return
@@ -24,7 +25,7 @@ function EmailComponent () {
       onValueChange={setEmail}
       isClearable
       onClear={() => setEmail('')}
-      name='email'
+      name="email"
     />
   )
 }

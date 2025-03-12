@@ -19,27 +19,28 @@ import { DateValue, getLocalTimeZone, today } from '@internationalized/date'
 import { RangeValue } from '@nextui-org/react'
 
 interface DataContextType {
-
-  pickerValue: RangeValue<DateValue>;
-  setPickerValue: (value: RangeValue<DateValue>) => void;
+  pickerValue: RangeValue<DateValue>
+  setPickerValue: (value: RangeValue<DateValue>) => void
 
   billsData: {
-    data: Bill[];
-    error: string | null;
-    createData: (newData: Bill) => Promise<void>;
-    updateData: (updatedData: Bill) => Promise<void>;
-    deleteData: (id: number) => Promise<void>;
-    searchData: (query: string) => void;
-    handleErrors: () => void };
+    data: Bill[]
+    error: string | null
+    createData: (newData: Bill) => Promise<void>
+    updateData: (updatedData: Bill) => Promise<void>
+    deleteData: (id: number) => Promise<void>
+    searchData: (query: string) => void
+    handleErrors: () => void
+  }
 
   icomeData: {
-    data: Icome[];
-    error: string | null;
-    createData: (newData: Icome) => Promise<void>;
-    updateData: (updatedData: Icome) => Promise<void>;
-    deleteData: (id: number) => Promise<void>;
-    searchData: (query: string) => void;
-    handleErrors: () => void };
+    data: Icome[]
+    error: string | null
+    createData: (newData: Icome) => Promise<void>
+    updateData: (updatedData: Icome) => Promise<void>
+    deleteData: (id: number) => Promise<void>
+    searchData: (query: string) => void
+    handleErrors: () => void
+  }
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined)
@@ -66,33 +67,38 @@ export const DataProvider = ({ children }: DataProviderProps) => {
 
   console.log(pickerValue)
 
-  const billServices = useMemo(() => ({
-    getDataService: getBillsService,
-    createDataService: createBillService,
-    updateDataService: updateBillService,
-    deleteDataService: deleteBillService
-  }), [])
+  const billServices = useMemo(
+    () => ({
+      getDataService: getBillsService,
+      createDataService: createBillService,
+      updateDataService: updateBillService,
+      deleteDataService: deleteBillService
+    }),
+    []
+  )
 
-  const icomeServices = useMemo(() => ({
-    getDataService: getIncomeService,
-    createDataService: createIcomeService,
-    updateDataService: updateIcomeService,
-    deleteDataService: deleteIcomeService
-  }), [])
+  const icomeServices = useMemo(
+    () => ({
+      getDataService: getIncomeService,
+      createDataService: createIcomeService,
+      updateDataService: updateIcomeService,
+      deleteDataService: deleteIcomeService
+    }),
+    []
+  )
 
   const billsData = useData<Bill>(idUsuario, billServices, pickerValue)
   const icomeData = useData<Icome>(idUsuario, icomeServices, pickerValue)
 
-  const value = useMemo(() => ({
-    billsData,
-    icomeData,
-    pickerValue,
-    setPickerValue
-  }), [billsData, icomeData, pickerValue, setPickerValue])
-
-  return (
-    <DataContext.Provider value={value}>
-      {children}
-    </DataContext.Provider>
+  const value = useMemo(
+    () => ({
+      billsData,
+      icomeData,
+      pickerValue,
+      setPickerValue
+    }),
+    [billsData, icomeData, pickerValue, setPickerValue]
   )
+
+  return <DataContext.Provider value={value}>{children}</DataContext.Provider>
 }

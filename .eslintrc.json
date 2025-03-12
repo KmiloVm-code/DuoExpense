@@ -27,7 +27,7 @@
     //no comillas dobles
     "quotes": ["error", "single"],
     "no-unused-vars": "warn",
-    
+    "no-undef": "off",
     "prettier/prettier": [
       "error",
       {

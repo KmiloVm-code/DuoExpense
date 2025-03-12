@@ -21,7 +21,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[250px,1fr] grid-rows-[140px,1fr] h-screen">
-      <aside className={`fixed lg:sticky h-full top-0 w-2/3 lg:w-auto lg:col-start-1 lg:col-end-2 row-start-1 lg:row-end-3 bg-gray-200 shadow-lg z-20 transform lg:transform-none transition-transform duration-300 ${sideBarHandleRender()}`} aria-label="Sidebar">
+      <aside
+        className={`fixed lg:sticky h-full top-0 w-2/3 lg:w-auto lg:col-start-1 lg:col-end-2 row-start-1 lg:row-end-3 bg-gray-200 shadow-lg z-20 transform lg:transform-none transition-transform duration-300 ${sideBarHandleRender()}`}
+        aria-label="Sidebar"
+      >
         <Sidebar handle={handleSidebar} />
       </aside>
 
@@ -29,7 +32,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <NavbarComponent handle={handleSidebar} />
       </header>
 
-      <main className='lg:col-start-2 bg-gray-200 p-4' aria-label="Main content">
+      <main
+        className="lg:col-start-2 bg-gray-200 p-4"
+        aria-label="Main content"
+      >
         {children}
       </main>
     </div>

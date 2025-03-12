@@ -1,22 +1,29 @@
 import { Key, useCallback, useState } from 'react'
 import { Button } from '@nextui-org/react'
 
-import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from '@nextui-org/table'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableColumn,
+  TableRow,
+  TableCell
+} from '@nextui-org/table'
 import { Card, CardHeader, CardBody, CardFooter } from '@nextui-org/card'
 
 type TableProps<T extends { concepto: string }> = {
-  toggleModal: (item: T) => void;
-  data: T[];
-  dataDelete: (id: number) => void;
-  columns: { key: keyof T | string, label: string }[];
-  formatDate?: (value: string) => string;
-  formatValue?: (value: number) => string;
-  getId: (item: T) => number;
-  renderActions?: (item: T) => JSX.Element;
-  renderItems?: (item: T, columnKey: Key) => JSX.Element;
+  toggleModal: (item: T) => void
+  data: T[]
+  dataDelete: (id: number) => void
+  columns: { key: keyof T | string; label: string }[]
+  formatDate?: (value: string) => string
+  formatValue?: (value: number) => string
+  getId: (item: T) => number
+  renderActions?: (item: T) => JSX.Element
+  renderItems?: (item: T, columnKey: Key) => JSX.Element
 }
 
-const TableComponent = <T extends { concepto: string }, >({
+const TableComponent = <T extends { concepto: string }>({
   toggleModal,
   data,
   dataDelete,
@@ -29,9 +36,12 @@ const TableComponent = <T extends { concepto: string }, >({
 }: TableProps<T>) => {
   const [, setError] = useState<unknown | null>(null)
 
-  const handleEdit = useCallback((item: T) => () => {
-    toggleModal(item)
-  }, [toggleModal])
+  const handleEdit = useCallback(
+    (item: T) => () => {
+      toggleModal(item)
+    },
+    [toggleModal]
+  )
 
   const handleDelete = (item: T) => {
     const id = getId(item)
@@ -52,51 +62,52 @@ const TableComponent = <T extends { concepto: string }, >({
       case 'fecha':
         return <span>{formatDate(value as unknown as string)}</span>
       case 'actions':
-        return renderActions
-          ? renderActions(item)
-          : (
-          <div className='flex gap-2 justify-center'>
-            <Button color='secondary' variant='flat' onPress={handleEdit(item)}>
+        return renderActions ? (
+          renderActions(item)
+        ) : (
+          <div className="flex gap-2 justify-center">
+            <Button color="secondary" variant="flat" onPress={handleEdit(item)}>
               Editar
             </Button>
-            <Button color='danger' variant='light' onPress={() => handleDelete(item)}>
+            <Button
+              color="danger"
+              variant="light"
+              onPress={() => handleDelete(item)}
+            >
               Eliminar
             </Button>
           </div>
-            )
+        )
       default:
-        return (
-          renderItems
-            ? renderItems(item, columnKey)
-            : <span>{String(value)}</span>
+        return renderItems ? (
+          renderItems(item, columnKey)
+        ) : (
+          <span>{String(value)}</span>
         )
     }
   }
 
   return (
     <>
-      <Table className='hidden md:block w-full'
-        aria-label='Data Table'
+      <Table
+        className="hidden md:block w-full"
+        aria-label="Data Table"
         isHeaderSticky
         isStriped
         fullWidth
       >
         <TableHeader>
-          {
-            columns.map((column) => (
-              <TableColumn key={column.key as string} align='center'>
-                {column.label}
-              </TableColumn>
-            ))
-          }
+          {columns.map((column) => (
+            <TableColumn key={column.key as string} align="center">
+              {column.label}
+            </TableColumn>
+          ))}
         </TableHeader>
         <TableBody<T> emptyContent={<p>No Hay Items</p>} items={data}>
           {(item) => (
             <TableRow key={getId(item)}>
               {(columnKey) => (
-                <TableCell>
-                  {dataCell(item, columnKey)}
-                  </TableCell>
+                <TableCell>{dataCell(item, columnKey)}</TableCell>
               )}
             </TableRow>
           )}
@@ -104,29 +115,25 @@ const TableComponent = <T extends { concepto: string }, >({
       </Table>
 
       <div className="md:hidden w-full">
-        {
-          data.map((item) => (
-            <Card key={getId(item)} className="mb-3">
-              <CardHeader>
-                <h1 className="text-lg font-bold">{item.concepto}</h1>
-              </CardHeader>
-              <CardBody className="flex flex-col gap-2">
-                {
-                  columns.map((column) => (
-                    column.key !== 'actions' && (
-                      <p key={column.key as string}>
-                        <span className="font-bold">{column.label}:</span> {dataCell(item, column.key as Key)}
-                      </p>
-                    )
-                  ))
-                }
-              </CardBody>
-              <CardFooter>
-                {dataCell(item, 'actions')}
-              </CardFooter>
-            </Card>
-          ))
-        }
+        {data.map((item) => (
+          <Card key={getId(item)} className="mb-3">
+            <CardHeader>
+              <h1 className="text-lg font-bold">{item.concepto}</h1>
+            </CardHeader>
+            <CardBody className="flex flex-col gap-2">
+              {columns.map(
+                (column) =>
+                  column.key !== 'actions' && (
+                    <p key={column.key as string}>
+                      <span className="font-bold">{column.label}:</span>{' '}
+                      {dataCell(item, column.key as Key)}
+                    </p>
+                  )
+              )}
+            </CardBody>
+            <CardFooter>{dataCell(item, 'actions')}</CardFooter>
+          </Card>
+        ))}
       </div>
     </>
   )

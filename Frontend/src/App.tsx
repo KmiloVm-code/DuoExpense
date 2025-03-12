@@ -9,10 +9,10 @@ import IcomePage from './pages/IcomePage.tsx'
 import './App.css'
 import RegisterPage from './pages/RegisterPage.tsx'
 
-function App () {
+function App() {
   const navigate = useNavigate()
   return (
-    <NextUIProvider navigate={navigate} >
+    <NextUIProvider navigate={navigate}>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />

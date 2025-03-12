@@ -1,12 +1,16 @@
 import { useState, FormEvent, useEffect } from 'react'
 
 interface UseFormHandlerProps<T> {
-  initialData: T;
-  onSubmit: (data: T) => Promise<void>;
-  dataToEdit?: T | null;
+  initialData: T
+  onSubmit: (data: T) => Promise<void>
+  dataToEdit?: T | null
 }
 
-export const useFormHandler = <T, >({ initialData, onSubmit, dataToEdit }: UseFormHandlerProps<T>) => {
+export const useFormHandler = <T>({
+  initialData,
+  onSubmit,
+  dataToEdit
+}: UseFormHandlerProps<T>) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<unknown | null>(null)
 
@@ -48,7 +52,9 @@ export const useFormHandler = <T, >({ initialData, onSubmit, dataToEdit }: UseFo
             }
             break
           case 'number':
-            newFormData[key] = Number(value.toString().replace(/[^0-9.-]+/g, ''))
+            newFormData[key] = Number(
+              value.toString().replace(/[^0-9.-]+/g, '')
+            )
             break
           default:
             // Otros inputs diferentes a checkbox (ya los manejamos)

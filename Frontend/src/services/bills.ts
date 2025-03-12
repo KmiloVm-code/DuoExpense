@@ -23,7 +23,11 @@ const buildBillRequest = (bill: Bill) => ({
   empresa: bill.empresa
 })
 
-export const getBillsService = async ({ filters }: {filters?: string}): Promise<Bill[]> => {
+export const getBillsService = async ({
+  filters
+}: {
+  filters?: string
+}): Promise<Bill[]> => {
   try {
     const res = await fetch(`${API_URL}?${filters}`, options)
     if (!res.ok) throw new Error('Error al obtener los gastos')
@@ -69,7 +73,7 @@ export const updateBillService = async (bill: Bill): Promise<Bill> => {
   }
 }
 
-export const deleteBillService = async ({ id }: {id: number}) => {
+export const deleteBillService = async ({ id }: { id: number }) => {
   try {
     const res = await fetch(`${API_URL}/${id}`, {
       ...options,

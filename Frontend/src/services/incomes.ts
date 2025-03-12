@@ -18,7 +18,11 @@ const buildIcomeRequest = (icome: Icome) => ({
   valor: icome.valor
 })
 
-export const getIncomeService = async ({ filters }: {filters?: string}): Promise<Icome[]> => {
+export const getIncomeService = async ({
+  filters
+}: {
+  filters?: string
+}): Promise<Icome[]> => {
   try {
     const res = await fetch(`${API_URL}?${filters}`, options)
     if (!res.ok) throw new Error('Error al obtener los ingresos')
@@ -64,7 +68,7 @@ export const updateIcomeService = async (icome: Icome): Promise<Icome> => {
   }
 }
 
-export const deleteIcomeService = async ({ id }: {id: number}) => {
+export const deleteIcomeService = async ({ id }: { id: number }) => {
   try {
     const res = await fetch(`${API_URL}/${id}`, {
       ...options,

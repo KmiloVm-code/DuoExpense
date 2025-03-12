@@ -11,7 +11,11 @@ interface useDataProps<T> {
   deleteDataService: (params: { id: number }) => Promise<void>
 }
 
-export const useData = <T extends { id: number }, >(userid: string, services: useDataProps<T>, pickerValue: RangeValue<DateValue>) => {
+export const useData = <T extends { id: number }>(
+  userid: string,
+  services: useDataProps<T>,
+  pickerValue: RangeValue<DateValue>
+) => {
   const [data, setData] = useState<T[]>([])
   const [error, setError] = useState<string | null>(null)
 
@@ -73,7 +77,10 @@ export const useData = <T extends { id: number }, >(userid: string, services: us
       return
     }
 
-    const filters = new URLSearchParams({ id_usuario: userid, concepto: query }).toString()
+    const filters = new URLSearchParams({
+      id_usuario: userid,
+      concepto: query
+    }).toString()
     try {
       const filteredData = await services.getDataService({ filters })
       setData(filteredData)
@@ -87,5 +94,13 @@ export const useData = <T extends { id: number }, >(userid: string, services: us
     setError(null)
   }
 
-  return { data, error, createData, updateData, deleteData, searchData, handleErrors }
+  return {
+    data,
+    error,
+    createData,
+    updateData,
+    deleteData,
+    searchData,
+    handleErrors
+  }
 }

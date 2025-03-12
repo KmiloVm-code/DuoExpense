@@ -1,7 +1,5 @@
 const ActionsComponent = () => {
-  return (
-    <div>ActionsComponent</div>
-  )
+  return <div>ActionsComponent</div>
 }
 
 export default ActionsComponent

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import EmailComponent from '../components/EmailComponent'
 import PasswordComponent from '../components/PasswordComponent'
@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { loginService } from '../services/auth'
 import { Button } from '@nextui-org/react'
 
-function LoginPage () {
+function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const { login } = useAuth()
@@ -33,23 +33,38 @@ function LoginPage () {
   return (
     <main className="flex flex-col items-center justify-center min-h-screen">
       <section className="w-full max-w-sm p-5 space-y-5">
-
         <h1 className="text-2xl font-semibold text-center">Iniciar sesión</h1>
 
-        <form onSubmit={handleSubmit} className="flex flex-col items-center gap-5">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col items-center gap-5"
+        >
           <EmailComponent />
           <PasswordComponent />
           {error && <div className="text-red-500">{error}</div>}
           <div className="w-full text-right text-sm text-purple-500">
             <Link to="/forgot-password">Olvidaste tu contraseña?</Link>
           </div>
-          <Button type="submit" color='secondary' fullWidth className='mt-5' isLoading={loading} isDisabled={loading}>Ingresar</Button>
+          <Button
+            type="submit"
+            color="secondary"
+            fullWidth
+            className="mt-5"
+            isLoading={loading}
+            isDisabled={loading}
+          >
+            Ingresar
+          </Button>
         </form>
 
         <div className="text-center text-sm">
-          <p>Usuario nuevo? <Link to="/register" className="text-purple-500">Crear cuenta</Link></p>
+          <p>
+            Usuario nuevo?{' '}
+            <Link to="/register" className="text-purple-500">
+              Crear cuenta
+            </Link>
+          </p>
         </div>
-
       </section>
     </main>
   )

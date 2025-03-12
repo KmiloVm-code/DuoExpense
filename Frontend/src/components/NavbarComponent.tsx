@@ -1,9 +1,5 @@
 import { Button } from '@nextui-org/react'
-import {
-  FiMenu,
-  FiUser,
-  FiBell
-} from 'react-icons/fi'
+import { FiMenu, FiUser, FiBell } from 'react-icons/fi'
 import { useAuth } from '../contexts/AuthContext'
 import { getLocalTimeZone, parseDate, today } from '@internationalized/date'
 import { DateRangePicker } from '@nextui-org/date-picker'
@@ -12,7 +8,7 @@ import { useDataContext } from '../contexts/DataContext'
 import { FC } from 'react'
 
 interface NavbarComponentProps {
-  handle: () => void;
+  handle: () => void
 }
 
 const NavbarComponent: FC<NavbarComponentProps> = ({ handle }) => {
@@ -21,15 +17,27 @@ const NavbarComponent: FC<NavbarComponentProps> = ({ handle }) => {
 
   return (
     <nav className="max-h-36 bg-white px-4 py-6 flex flex-col">
-
       <div className="flex justify-between items-center">
-        <FiMenu className='text-gray-500 hover:text-gray-700 focus:outline-none lg:hidden cursor-pointer' onClick={handle} size={24} aria-label="Toggle Sidebar" />
-        <h2 className="text-lg lg:text-2xl font-bold">Bienvenido {user?.nombre}</h2>
+        <FiMenu
+          className="text-gray-500 hover:text-gray-700 focus:outline-none lg:hidden cursor-pointer"
+          onClick={handle}
+          size={24}
+          aria-label="Toggle Sidebar"
+        />
+        <h2 className="text-lg lg:text-2xl font-bold">
+          Bienvenido {user?.nombre}
+        </h2>
         <div className="flex items-center space-x-4">
-          <button className="text-gray-500 hover:text-gray-700" aria-label="Notifications">
+          <button
+            className="text-gray-500 hover:text-gray-700"
+            aria-label="Notifications"
+          >
             <FiBell size={20} />
           </button>
-          <button className="text-gray-500 hover:text-gray-700" aria-label="User Profile">
+          <button
+            className="text-gray-500 hover:text-gray-700"
+            aria-label="User Profile"
+          >
             <FiUser size={20} />
           </button>
           <Button color="danger" onClick={logout}>
