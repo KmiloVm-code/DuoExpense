@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useDataContext } from '../contexts/DataContext'
 import { convertValue } from '../utils/formatters'
 
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
+// import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
 import { Line } from 'react-chartjs-2'
 import {
   FiDollarSign,
@@ -59,17 +59,22 @@ function DashboardPage () {
     {
       title: 'Balance Total',
       value: `${convertValue(icomeData.data.reduce((acc, icome) => acc + Number(icome.valor), 0) - billsData.data.reduce((acc, bill) => acc + Number(bill.valor), 0))}`,
-      icon: <FiDollarSign className="text-green-500" size={24} />
+      icon: <FiDollarSign className="text-white" size={24} />
     },
     {
-      title: 'Ingresos Mensuales',
+      title: 'Ingresos',
       value: `${convertValue(icomeData.data.reduce((acc, icome) => acc + Number(icome.valor), 0))}`,
-      icon: <FiTrendingUp className="text-blue-500" size={24} />
+      icon: <FiTrendingUp className="text-green-500" size={24} />
     },
     {
-      title: 'Gastos Mensuales',
+      title: 'Gastos',
       value: `${convertValue(billsData.data.reduce((acc, bill) => acc + (bill.valor || 0), 0))}`,
       icon: <FiCreditCard className="text-red-500" size={24} />
+    },
+    {
+      title: 'Ahorros',
+      value: `${convertValue(icomeData.data.reduce((acc, icome) => acc + Number(icome.valor), 0) - billsData.data.reduce((acc, bill) => acc + Number(bill.valor), 0))}`, // Cambiar por el valor de los ahorros
+      icon: <FiDollarSign className="text-green-500" size={24} />
     }
   ]
 
@@ -113,6 +118,7 @@ function DashboardPage () {
 
   console.log('ChartData: ', chartData)
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleDragEnd = (result: { destination: { index: number } | null; source: { index: number } }) => {
     if (!result.destination) return
     const items = Array.from(panels)
@@ -126,92 +132,54 @@ function DashboardPage () {
     return activityData.sort((a, b) => new Date(b.date || '').getTime() - new Date(a.date || '').getTime()).slice(0, 5)
   }
 
-  const renderPanel = (panel: { id?: string; type: 'stats' | 'activity' | 'chart'; title?: string }) => {
-    switch (panel.type) {
-      case 'stats':
-        return (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {statsData.map((stat, index) => (
-              <div
-                key={index}
-                className="bg-white p-4 rounded-lg border-gray-200 border-solid border-small shadow-md text-center flex flex-col items-center"
-              >
-                {stat.icon}
-                <h3 className="text-gray-500 text-sm mt-2">{stat.title}</h3>
-                <p className="text-2xl font-bold text-gray-800">{stat.value}</p>
-              </div>
-            ))}
-          </div>
-        )
-      case 'activity':
-        return (
-          <div>
-            <div className="space-y-4">
-              {filterActivityData().map((activity) => (
-                <div
-                  key={activity.id}
-                  className="flex justify-between items-center bg-white p-4 rounded-lg shadow-md border-gray-200 border-solid border-small text-wrap"
-                >
-                  <span className="text-gray-800">{activity.text}</span>
-                  <div className="text-right">
-                    <span className={`font-bold ${activity.type === 'ingreso' ? 'text-green-500' : 'text-red-500'}`}>
-                      {activity.amount}
-                    </span>
-                    <p className="text-gray-500 text-sm">{activity.date}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )
-      case 'chart':
-        return (
-          <div className="bg-white p-4 rounded-lg shadow-md border-gray-200 border-solid border-small overflow-x-auto">
-            <Line data={chartData} options={{ responsive: true, maintainAspectRatio: true }} />
-          </div>
-        )
-      default:
-        return null
-    }
-  }
-
   return (
-          <DragDropContext onDragEnd={handleDragEnd}>
-            <Droppable droppableId="dashboard-panels">
-              {(provided) => (
-                <section
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  className="space-y-6"
-                >
-                  {panels.map((panel, index) => (
-                    <Draggable
-                      key={panel.id}
-                      draggableId={panel.id}
-                      index={index}
-                    >
-                      {(provided) => (
-                        <article
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          className="bg-white rounded-lg shadow-md border-gray-200 border-solid border-small p-4 md:p-6"
-                        >
-                          <head className='flex justify-between items-center'>
-                          <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-4">
-                            {panel.title}
-                          </h2>
-                          </head>
-                          {renderPanel(panel)}
-                        </article>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </section>
-              )}
-            </Droppable>
-          </DragDropContext>
+    <main className="grid grid-cols-1 lg:grid-cols-[2fr,repeat(4,1fr)] lg:grid-rows-6 gap-4 p-4">
+
+        {statsData.map((stat, index) => (
+          index === 0
+            ? (
+            <article key={index} className="flex flex-col relative p-6 bg-[#9333ea] rounded-2xl shadow-md">
+            <span className='flex items-center justify-between mb-3 w-full space-x-2'>
+            <h3 className="text-white text-lg font-bold">{statsData[0].title}</h3>
+            <figure className='p-1 border rounded-full bg-[#fff3]'>
+              {statsData[0].icon}
+            </figure>
+            </span>
+            <p className="text-white text-4xl font-extrabold mb-12">{statsData[0].value}</p>
+        </article>
+              )
+            : (
+        <article key={index} className="flex flex-col relative p-6 bg-white rounded-2xl shadow-md">
+            <span className='flex items-center justify-between mb-3 w-full space-x-2'>
+            <h3 className="text-sm font-medium">{stat.title}</h3>
+            <figure className='p-1 border rounded-full'>
+              {stat.icon}
+            </figure>
+            </span>
+            <p className="font-bold text-2xl mb-20">{stat.value}</p>
+        </article>
+              )
+        ))}
+
+      <article className="lg:col-span-3 lg:row-start-2 lg:row-span-2 bg-white rounded-2xl shadow-md p-6">
+        <Line data={chartData} options={{ responsive: true, maintainAspectRatio: false }} />
+      </article>
+
+      <article className="lg:col-span-2 lg:row-span-2 lg:col-start-4 lg:row-start-2">
+      {filterActivityData().map((activity) => (
+        <div key={activity.id} className="flex items-center justify-between p-4 bg-white rounded-lg shadow-md mb-4">
+          <div className="flex items-center space-x-2">
+            <h3 className="text-sm font-medium">{activity.text}</h3>
+            <span className={`text-sm font-bold ${activity.type === 'ingreso' ? 'text-green-500' : 'text-red-500'}`}>{activity.amount}</span>
+          </div>
+          <span className="text-xs text-gray-500">{activity.date}</span>
+        </div>
+      ))}
+      </article>
+    <div className="lg:col-span-3 lg:row-span-2 lg:row-start-4">8</div>
+    <div className="lg:col-span-3 lg:row-span-2 lg:col-start-4 lg:row-start-4">9</div>
+    <div className="lg:col-span-6 lg:row-start-6">10</div>
+    </main>
   )
 }
 
