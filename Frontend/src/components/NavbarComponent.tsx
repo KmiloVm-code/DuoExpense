@@ -54,6 +54,7 @@ const NavbarComponent: FC<NavbarComponentProps> = ({ handle }) => {
             start: today(getLocalTimeZone()).subtract({ days: 1 }),
             end: parseDate(new Date().toISOString().split('T')[0])
           }}
+          aria-label="Seleccionar rango de fechas"
         />
         <Button
           color="secondary"
