@@ -16,7 +16,7 @@ import {
 } from '../services/incomes'
 import { useAuth } from './AuthContext'
 import { DateValue, getLocalTimeZone, today } from '@internationalized/date'
-import { RangeValue } from '@nextui-org/react'
+import { RangeValue } from '@heroui/react'
 
 interface DataContextType {
   pickerValue: RangeValue<DateValue>
@@ -45,7 +45,7 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined)
 
-export const useDataContext = () => {
+export const useDataContext = (p0: unknown) => {
   const context = useContext(DataContext)
   if (!context) {
     throw new Error('useDataContext must be used within a DataProvider')

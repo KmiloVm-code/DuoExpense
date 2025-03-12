@@ -5,8 +5,8 @@ import {
   Select,
   SelectItem,
   useDisclosure
-} from '@nextui-org/react'
-import { Input } from '@nextui-org/input'
+} from "@heroui/react"
+import { Input } from "@heroui/input"
 
 import { useAuth } from '../contexts/AuthContext'
 

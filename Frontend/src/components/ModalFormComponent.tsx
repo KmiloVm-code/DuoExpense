@@ -5,7 +5,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter
-} from '@nextui-org/react'
+} from "@heroui/react"
 
 interface ModalFormComponentProps<T> {
   isOpen: boolean

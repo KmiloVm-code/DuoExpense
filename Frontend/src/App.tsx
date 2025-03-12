@@ -4,7 +4,7 @@ import Home from './pages/DashboardPage.tsx'
 import LoginPage from './pages/LoginPage.tsx'
 import BillsPage from './pages/BillsPage.tsx'
 import { ProtectedRoute } from './components/ProtectedRoute.tsx'
-import { NextUIProvider } from '@nextui-org/react'
+import { HeroUIProvider } from "@heroui/react"
 import IcomePage from './pages/IcomePage.tsx'
 import './App.css'
 import RegisterPage from './pages/RegisterPage.tsx'
@@ -12,7 +12,7 @@ import RegisterPage from './pages/RegisterPage.tsx'
 function App() {
   const navigate = useNavigate()
   return (
-    <NextUIProvider navigate={navigate}>
+    <HeroUIProvider navigate={navigate}>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -22,7 +22,7 @@ function App() {
           <Route path="/ingresos" element={<IcomePage />} />
         </Route>
       </Routes>
-    </NextUIProvider>
+    </HeroUIProvider>
   )
 }
 

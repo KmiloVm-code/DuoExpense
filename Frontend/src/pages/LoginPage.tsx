@@ -4,7 +4,7 @@ import EmailComponent from '../components/EmailComponent'
 import PasswordComponent from '../components/PasswordComponent'
 import { useAuth } from '../contexts/AuthContext'
 import { loginService } from '../services/auth'
-import { Button } from '@nextui-org/react'
+import { Button } from "@heroui/react"
 
 function LoginPage() {
   const [error, setError] = useState<string | null>(null)

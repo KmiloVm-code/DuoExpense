@@ -28,6 +28,9 @@
     "quotes": ["error", "single"],
     "no-unused-vars": "warn",
     "no-undef": "off",
+    // no any types
+    "@typescript-eslint/no-explicit-any": "error",
+    
     "prettier/prettier": [
       "error",
       {
