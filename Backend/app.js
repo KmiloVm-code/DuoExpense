@@ -35,16 +35,14 @@ export const createApp = ({ userModel, ingresoModel, gastoModel }) => {
   app.get('/', (req, res) => {
     const { user } = req.session
     if (!user) {
-      return res.status(401)
-        .send('<h1>Unauthorized</h1>')
+      return res.status(401).send('<h1>Unauthorized</h1>')
     }
   })
 
   app.get('/auth/check-session', async (req, res) => {
     const token = req.cookies.access_token
     if (!token) {
-      return res.status(401)
-        .send('<h1>Unauthorized</h1>')
+      return res.status(401).send('<h1>Unauthorized</h1>')
     }
 
     try {
@@ -72,8 +70,7 @@ export const createApp = ({ userModel, ingresoModel, gastoModel }) => {
   app.use('/gastos', createGastoRouter({ gastoModel }))
 
   app.use((req, res) => {
-    res.status(404)
-      .send('<h1>404 - Not Found</h1>')
+    res.status(404).send('<h1>404 - Not Found</h1>')
   })
 
   app.listen(port, () => {

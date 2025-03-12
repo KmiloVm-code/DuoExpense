@@ -17,10 +17,9 @@ const gastoSchema = z.object({
     invalid_type_error: 'Fecha must be a string',
     required_error: 'Fecha is required'
   }),
-  cuotas: z.union([z.literal(null),
-    z.number().int().positive(
-      { invalid_type_error: 'Cuotas must be a number' }
-    )
+  cuotas: z.union([
+    z.literal(null),
+    z.number().int().positive({ invalid_type_error: 'Cuotas must be a number' })
   ]),
   descripcion: z.string({
     invalid_type_error: 'Descripcion must be a string'
@@ -33,10 +32,12 @@ const gastoSchema = z.object({
     invalid_type_error: 'IdCategoria must be a number',
     required_error: 'IdCategoria is required'
   }),
-  idTarjeta: z.union([z.literal(null),
-    z.number().int().positive(
-      { invalid_type_error: 'IdTarjeta must be a number' }
-    )
+  idTarjeta: z.union([
+    z.literal(null),
+    z
+      .number()
+      .int()
+      .positive({ invalid_type_error: 'IdTarjeta must be a number' })
   ]),
   idMetodoPago: z.number({
     invalid_type_error: 'IdMetodoPago must be a number',
@@ -48,10 +49,10 @@ const gastoSchema = z.object({
   })
 })
 
-export function validateGasto (object) {
+export function validateGasto(object) {
   return gastoSchema.safeParse(object)
 }
 
-export function validatepartialGasto (object) {
+export function validatepartialGasto(object) {
   return gastoSchema.partial().safeParse(object)
 }

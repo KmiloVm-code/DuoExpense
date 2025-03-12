@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken'
 const SECRET_KEY = process.env.SECRET_KEY
 
 export class AuthController {
-  constructor ({ userModel }) {
+  constructor({ userModel }) {
     this.userModel = userModel
   }
 

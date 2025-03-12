@@ -4,21 +4,21 @@ import { randomUUID } from 'node:crypto'
 const users = readJSON('./users.json')
 
 export class UserModel {
-  static async getAll ({ name }) {
+  static async getAll({ name }) {
     if (name) {
-      return users.filter(
-        user => user.nombre.toLowerCase().includes(name.toLowerCase())
+      return users.filter((user) =>
+        user.nombre.toLowerCase().includes(name.toLowerCase())
       )
     }
     return users
   }
 
-  static async getById ({ id }) {
-    const user = users.find(user => user.id_usuario === id)
+  static async getById({ id }) {
+    const user = users.find((user) => user.id_usuario === id)
     return user
   }
 
-  static async create ({ input }) {
+  static async create({ input }) {
     const newUser = {
       id: randomUUID(),
       ...input,
@@ -30,16 +30,16 @@ export class UserModel {
     return newUser
   }
 
-  static async delete ({ id }) {
-    const userIndex = users.findIndex(user => user.id_usuario === id)
+  static async delete({ id }) {
+    const userIndex = users.findIndex((user) => user.id_usuario === id)
     if (userIndex === -1) return false
 
     users.splice(userIndex, 1)
     return true
   }
 
-  static async update ({ id, input }) {
-    const userIndex = users.findIndex(user => user.id_usuario === id)
+  static async update({ id, input }) {
+    const userIndex = users.findIndex((user) => user.id_usuario === id)
     if (userIndex === -1) return false
 
     users[userIndex] = {

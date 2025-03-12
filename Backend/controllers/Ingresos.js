@@ -1,7 +1,7 @@
 import { validateIngreso, validatepartialIngreso } from '../Schemas/ingresos.js'
 
 export class IngresosController {
-  constructor ({ ingresoModel }) {
+  constructor({ ingresoModel }) {
     this.ingresoModel = ingresoModel
   }
 
@@ -35,7 +35,10 @@ export class IngresosController {
       })
     }
 
-    const updatedIngreso = await this.ingresoModel.update({ id, input: result.data })
+    const updatedIngreso = await this.ingresoModel.update({
+      id,
+      input: result.data
+    })
 
     res.json(updatedIngreso)
   }

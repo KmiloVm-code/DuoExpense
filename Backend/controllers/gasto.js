@@ -1,7 +1,7 @@
 import { validateGasto, validatepartialGasto } from '../Schemas/gastos.js'
 
 export class GastoController {
-  constructor ({ gastoModel }) {
+  constructor({ gastoModel }) {
     this.gastoModel = gastoModel
   }
 
@@ -35,7 +35,10 @@ export class GastoController {
       })
     }
 
-    const updatedGasto = await this.gastoModel.update({ id, input: result.data })
+    const updatedGasto = await this.gastoModel.update({
+      id,
+      input: result.data
+    })
 
     res.json(updatedGasto)
   }

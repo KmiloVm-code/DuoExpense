@@ -27,10 +27,10 @@ const ingresoSchema = z.object({
   })
 })
 
-export function validateIngreso (object) {
+export function validateIngreso(object) {
   return ingresoSchema.safeParse(object)
 }
 
-export function validatepartialIngreso (object) {
+export function validatepartialIngreso(object) {
   return ingresoSchema.partial().safeParse(object)
 }
