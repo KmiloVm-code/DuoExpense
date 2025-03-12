@@ -20,9 +20,9 @@ const NavbarComponent: FC<NavbarComponentProps> = ({ handle }) => {
   const { pickerValue, setPickerValue } = useDataContext()
 
   return (
-    <nav className="max-h-36 bg-white px-4 py-6 flex flex-col z-20">
+    <nav className="max-h-36 bg-white px-4 py-6 flex flex-col">
 
-        <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center">
         <FiMenu className='text-gray-500 hover:text-gray-700 focus:outline-none lg:hidden cursor-pointer' onClick={handle} size={24} aria-label="Toggle Sidebar" />
         <h2 className="text-lg lg:text-2xl font-bold">Bienvenido {user?.nombre}</h2>
         <div className="flex items-center space-x-4">
@@ -36,9 +36,9 @@ const NavbarComponent: FC<NavbarComponentProps> = ({ handle }) => {
             Logout
           </Button>
         </div>
-        </div>
+      </div>
 
-          <div className="flex items-center space-x-4 mt-4 w-full lg:w-fit justify-center lg:justify-start px-8 lg:px-0">
+      <div className="flex items-center space-x-4 mt-4 w-full lg:w-fit justify-center lg:justify-start px-8 lg:px-0">
         <DateRangePicker
           value={pickerValue}
           onChange={setPickerValue}
@@ -58,7 +58,7 @@ const NavbarComponent: FC<NavbarComponentProps> = ({ handle }) => {
         >
           Último Mes
         </Button>
-          </div>
+      </div>
     </nav>
   )
 }
