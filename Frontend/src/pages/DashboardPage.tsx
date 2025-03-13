@@ -141,7 +141,7 @@ function DashboardPage() {
   }
 
   return (
-    <main className="grid grid-cols-1 lg:grid-cols-[2fr,repeat(4,1fr)] lg:grid-rows-6 gap-4">
+    <main className="grid grid-cols-1 lg:grid-cols-[2fr,repeat(4,1fr)] lg:grid-rows-6 gap-4 p-4">
       {statsData.map((stat, index) =>
         index === 0 ? (
           <article
@@ -181,27 +181,24 @@ function DashboardPage() {
         />
       </article>
 
-      <article className="bg-white p-6 rounded-2xl shadow-md lg:col-span-2 lg:row-span-2 lg:col-start-4 lg:row-start-2">
-        <h3 className="text-2xl font-semibold">Transacciones Recientes</h3>
-        <p className="text-sm mb-3">Tus últimas 5 transacciones</p>
+      <article className="lg:col-span-2 lg:row-span-2 lg:col-start-4 lg:row-start-2">
         {filterActivityData().map((activity) => (
           <div
             key={activity.id}
-            className="flex items-center justify-between p-4"
+            className="flex items-center justify-between p-4 bg-white rounded-lg shadow-md mb-4"
           >
-            <div className="flex flex-col">
+            <div className="flex items-center space-x-2">
               <h3 className="text-sm font-medium">{activity.text}</h3>
-              <small className="text-xs text-gray-500">{activity.date}</small>
+              <span
+                className={`text-sm font-bold ${activity.type === 'ingreso' ? 'text-green-500' : 'text-red-500'}`}
+              >
+                {activity.amount}
+              </span>
             </div>
-            <p
-              className={`text-sm font-bold ${activity.type === 'ingreso' ? 'text-green-500' : 'text-red-500'}`}
-            >
-              {activity.amount}
-            </p>
+            <span className="text-xs text-gray-500">{activity.date}</span>
           </div>
         ))}
       </article>
-
       <div className="lg:col-span-3 lg:row-span-2 lg:row-start-4">8</div>
       <div className="lg:col-span-3 lg:row-span-2 lg:col-start-4 lg:row-start-4">
         9

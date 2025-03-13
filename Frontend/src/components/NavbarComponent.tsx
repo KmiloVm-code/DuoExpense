@@ -27,7 +27,7 @@ const NavbarComponent: FC<NavbarComponentProps> = ({ handle }) => {
   const { pickerValue, setPickerValue } = useDataContext(defaultRange)
 
   return (
-    <nav className="max-h-36 bg-white shadow-sm px-4 py-6 flex flex-col">
+    <nav className="max-h-36 bg-white px-4 py-6 flex flex-col">
       <div className="flex justify-between items-center">
         <FiMenu
           className="text-gray-500 hover:text-gray-700 focus:outline-none lg:hidden cursor-pointer"
