@@ -4,7 +4,7 @@ import Home from './pages/DashboardPage.tsx'
 import LoginPage from './pages/LoginPage.tsx'
 import BillsPage from './pages/BillsPage.tsx'
 import { ProtectedRoute } from './components/ProtectedRoute.tsx'
-import { HeroUIProvider } from "@heroui/react"
+import { HeroUIProvider } from '@heroui/react'
 import IcomePage from './pages/IcomePage.tsx'
 import './App.css'
 import RegisterPage from './pages/RegisterPage.tsx'

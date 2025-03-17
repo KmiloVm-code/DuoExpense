@@ -1,5 +1,5 @@
 import { Key, useCallback, useState } from 'react'
-import { Button } from "@heroui/react"
+import { Button } from '@heroui/react'
 
 import {
   Table,
@@ -8,8 +8,8 @@ import {
   TableColumn,
   TableRow,
   TableCell
-} from "@heroui/table"
-import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card"
+} from '@heroui/table'
+import { Card, CardHeader, CardBody, CardFooter } from '@heroui/card'
 
 type TableProps<T extends { concepto: string }> = {
   toggleModal: (item: T) => void

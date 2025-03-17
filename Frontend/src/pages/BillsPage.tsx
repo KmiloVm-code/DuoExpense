@@ -5,8 +5,8 @@ import {
   Select,
   SelectItem,
   useDisclosure
-} from "@heroui/react"
-import { Input } from "@heroui/input"
+} from '@heroui/react'
+import { Input } from '@heroui/input'
 
 import { useAuth } from '../contexts/AuthContext'
 

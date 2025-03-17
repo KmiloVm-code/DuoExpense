@@ -5,7 +5,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter
-} from "@heroui/react"
+} from '@heroui/react'
 
 interface ModalFormComponentProps<T> {
   isOpen: boolean

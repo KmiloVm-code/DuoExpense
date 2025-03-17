@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import debounce from 'just-debounce-it'
 
 import { DateValue } from '@internationalized/date'
-import { RangeValue } from "@heroui/react"
+import { RangeValue } from '@heroui/react'
 
 interface useDataProps<T> {
   getDataService: (params: { filters?: string }) => Promise<T[]>

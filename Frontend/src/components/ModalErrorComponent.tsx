@@ -5,7 +5,7 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader
-} from "@heroui/react"
+} from '@heroui/react'
 
 interface ModalErrorProps {
   isOpen: boolean

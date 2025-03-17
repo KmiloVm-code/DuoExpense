@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Button, Input } from "@heroui/react"
+import { Button, Input } from '@heroui/react'
 import EmailComponent from '../components/EmailComponent'
 import PasswordComponent from '../components/PasswordComponent'
 import { loginService, registerService } from '../services/auth'
