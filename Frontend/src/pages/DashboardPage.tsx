@@ -1,23 +1,8 @@
-import { useState } from 'react'
-import { useDataContext } from '../contexts/DataContext'
 import { convertValue } from '../utils/formatters'
 
-import {
-  ChartLine,
-  TrendingUp,
-  CreditCard,
-  CircleDollarSign
-} from 'lucide-react'
+import { ChartLine, TrendingUp, CreditCard } from 'lucide-react'
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
 
-// import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
-// import { Line } from 'react-chartjs-2'
-// import {
-//   FiDollarSign,
-//   FiCreditCard,
-//   FiTrendingUp
-//   // FiFilter
-// } from 'react-icons/fi'
 import {
   ChartConfig,
   ChartContainer,
@@ -26,160 +11,17 @@ import {
   ChartTooltip,
   ChartTooltipContent
 } from '../components/ui/chart'
-// import {
-//   Chart as ChartJS,
-//   CategoryScale,
-//   LinearScale,
-//   PointElement,
-//   LineElement,
-//   Title,
-//   Tooltip,
-//   Legend
-// } from 'chart.js'
-
-// ChartJS.register(
-//   CategoryScale,
-//   LinearScale,
-//   PointElement,
-//   LineElement,
-//   Title,
-//   Tooltip,
-//   Legend
-// )
+import StatCard from '../components/StatCard'
+import QuickActionButton from '../components/QuickActionButton'
+import RecentTransaction from '../components/RecentTransaction'
+import useStatsData from '../hooks/useStatsData'
+import useActivityData from '../hooks/useActivityData'
+import useGroupedActivityData from '../hooks/useGroupedActivityData'
 
 function DashboardPage() {
-  const { billsData, icomeData } = useDataContext(undefined)
-
-  const [panels, setPanels] = useState<
-    { id: string; type: 'stats' | 'activity' | 'chart'; title: string }[]
-  >([
-    {
-      id: 'stats',
-      type: 'stats',
-      title: 'Resumen Financiero'
-    },
-    {
-      id: 'activity',
-      type: 'activity',
-      title: 'Transacciones Recientes'
-    },
-    {
-      id: 'chart',
-      type: 'chart',
-      title: 'Flujo de Dinero'
-    }
-  ])
-
-  console.log(icomeData.data[0]?.valor)
-  console.log(icomeData.data[0]?.valor)
-
-  const statsData = [
-    {
-      title: 'Balance Total',
-      value: `${convertValue(icomeData.data.reduce((acc, icome) => acc + Number(icome.valor), 0) - billsData.data.reduce((acc, bill) => acc + Number(bill.valor), 0))}`,
-      icon: <CircleDollarSign color="white" />
-    },
-    {
-      title: 'Ingresos',
-      value: `${convertValue(icomeData.data.reduce((acc, icome) => acc + Number(icome.valor), 0))}`,
-      icon: <TrendingUp color="#34d399" />
-    },
-    {
-      title: 'Gastos',
-      value: `${convertValue(billsData.data.reduce((acc, bill) => acc + (bill.valor || 0), 0))}`,
-      icon: <CreditCard color="#f87171" />
-    },
-    {
-      title: 'Ahorros',
-      value: `${convertValue(icomeData.data.reduce((acc, icome) => acc + Number(icome.valor), 0) - billsData.data.reduce((acc, bill) => acc + Number(bill.valor), 0))}`, // Cambiar por el valor de los ahorros
-      icon: <CircleDollarSign color="#9333ea" />
-    }
-  ]
-
-  type Activity = {
-    id: number
-    text: string
-    amount: string
-    type: 'ingreso' | 'gasto'
-    date: string
-  }
-
-  const activityData = [
-    ...icomeData.data.map(
-      (icome): Activity => ({
-        id: icome.id_ingreso ?? 0,
-        text: icome.concepto,
-        amount: `+ ${convertValue(Number(icome.valor))}`,
-        type: 'ingreso' as 'ingreso',
-        date: icome.fecha?.split('T')[0] ?? ''
-      })
-    ),
-
-    ...billsData.data.map(
-      (bill): Activity => ({
-        id: bill.id_gasto ?? 0,
-        text: bill.concepto,
-        amount: `- ${convertValue(Number(bill.valor ?? 0))}`,
-        type: 'gasto' as 'gasto',
-        date: bill.fecha?.split('T')[0] ?? ''
-      })
-    )
-  ]
-
-  console.log('ActivityData: ', activityData)
-
-  type ChartData = {
-    month: string
-    ingresos: number
-    gastos: number
-  }
-
-  const months: string[] = [
-    'Enero',
-    'Febrero',
-    'Marzo',
-    'Abril',
-    'Mayo',
-    'Junio',
-    'Julio',
-    'Agosto',
-    'Septiembre',
-    'Octubre',
-    'Noviembre',
-    'Diciembre'
-  ]
-
-  const groupActivityData = (activityData: Activity[]): ChartData[] => {
-    const groupedData: Record<string, ChartData> = {}
-
-    activityData.forEach((item) => {
-      const [year, month] = item.date.split('-')
-      const monthName = months[Number(month) - 1]
-      const key = `${year}-${month}`
-
-      if (!groupedData[key]) {
-        groupedData[key] = { month: monthName, ingresos: 0, gastos: 0 }
-      }
-
-      console.log('Item amount: ', item.amount)
-
-      const numericAmount = parseInt(item.amount.replace(/\D/g, ''))
-
-      if (item.type === 'ingreso') {
-        groupedData[key].ingresos += numericAmount
-      } else {
-        groupedData[key].gastos += numericAmount
-      }
-    })
-
-    console.log('GroupedData: ', groupedData)
-
-    return Object.values(groupedData)
-  }
-
-  const chartData: ChartData[] = groupActivityData(activityData)
-
-  console.log('ChartData: ', chartData)
+  const statsData = useStatsData()
+  const activityData = useActivityData()
+  const chartData = useGroupedActivityData(activityData)
 
   const chartConfig = {
     gastos: {
@@ -191,8 +33,6 @@ function DashboardPage() {
       label: 'Ingresos'
     }
   } satisfies ChartConfig
-
-  console.log('ChartData: ', chartData)
 
   const filterActivityData = () => {
     return activityData
@@ -207,33 +47,20 @@ function DashboardPage() {
     <main className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl::grid-cols-[2fr,repeat(4,1fr)] gap-4">
       {statsData.map((stat, index) =>
         index === 0 ? (
-          <article
+          <StatCard
             key={index}
-            className="flex flex-col relative p-6 bg-[#9333ea] rounded-2xl shadow-md md:col-span-2"
-          >
-            <span className="flex items-center justify-between mb-3 w-full space-x-2">
-              <h3 className="text-white text-base lg:text-lg font-bold">
-                {statsData[0].title}
-              </h3>
-              <figure className="p-1 border rounded-full bg-[#fff3]">
-                {statsData[0].icon}
-              </figure>
-            </span>
-            <p className="text-white text-xl md:text-2xl lg:text-3xl font-extrabold mb-12">
-              {statsData[0].value}
-            </p>
-          </article>
+            title={stat.title}
+            value={stat.value}
+            icon={stat.icon}
+            type="mainCard"
+          />
         ) : (
-          <article
+          <StatCard
             key={index}
-            className="flex flex-col relative p-6 bg-white rounded-2xl shadow-md"
-          >
-            <span className="flex items-center justify-between mb-3 w-full space-x-2">
-              <h3 className="text-sm font-medium">{stat.title}</h3>
-              <figure className="p-1 border rounded-full">{stat.icon}</figure>
-            </span>
-            <p className="font-bold text-2xl mb-20">{stat.value}</p>
-          </article>
+            title={stat.title}
+            value={stat.value}
+            icon={stat.icon}
+          />
         )
       )}
 
@@ -242,18 +69,18 @@ function DashboardPage() {
           <h3 className="text-sm font-medium">Acciones Rápidas</h3>
         </span>
         <div className="flex flex-col space-y-4">
-          <button className="flex items-center justify-between py-1 px-2 rounded-lg bg-[#f87171] text-white">
-            <span className="flex items-center space-x-2">
-              <CreditCard />
-              <span>Gasto</span>
-            </span>
-          </button>
-          <button className="flex items-center justify-between py-1 px-2 rounded-lg bg-[#34d399] text-white">
-            <span className="flex items-center space-x-2">
-              <TrendingUp />
-              <span>Ingreso</span>
-            </span>
-          </button>
+          <QuickActionButton
+            label="Ingresos"
+            bgColor="bg-[#f87171]"
+            icon={<TrendingUp color="white" />}
+            onClick={() => console.log('Ingresos')}
+          />
+          <QuickActionButton
+            label="Gastos"
+            bgColor="bg-[#34d399]"
+            icon={<CreditCard color="white" />}
+            onClick={() => console.log('Gastos')}
+          />
         </div>
       </article>
 
@@ -320,26 +147,19 @@ function DashboardPage() {
         </span>
         <p className="text-sm mb-3">Tus últimas 5 transacciones</p>
         {filterActivityData().map((activity) => (
-          <div
+          <RecentTransaction
             key={activity.id}
-            className="flex items-center justify-between p-4"
-          >
-            <div className="flex flex-col">
-              <h3 className="text-sm font-medium">{activity.text}</h3>
-              <small className="text-xs text-gray-500">{activity.date}</small>
-            </div>
-            <p
-              className={`text-sm font-bold ${activity.type === 'ingreso' ? 'text-green-500' : 'text-red-500'}`}
-            >
-              {activity.amount}
-            </p>
-          </div>
+            title={activity.text}
+            date={activity.date}
+            type={activity.type}
+            amount={activity.amount}
+          />
         ))}
       </article>
 
-      <div className="lg:col-span-3 lg:row-span-2 md:row-start-5 lg:row-start-4">
+      <article className="lg:col-span-3 lg:row-span-2 md:row-start-5 lg:row-start-4">
         8
-      </div>
+      </article>
       <div className="lg:col-span-3 lg:row-span-2 lg:col-start-4 md:row-start-5 lg:row-start-4">
         9
       </div>
