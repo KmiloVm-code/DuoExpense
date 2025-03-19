@@ -7,6 +7,7 @@ type Activity = {
   amount: string
   type: 'ingreso' | 'gasto'
   date: string
+  idCategory?: number
 }
 
 const useActivityData = () => {
@@ -29,7 +30,8 @@ const useActivityData = () => {
         text: bill.concepto,
         amount: `- ${convertValue(Number(bill.valor ?? 0))}`,
         type: 'gasto' as 'gasto',
-        date: bill.fecha?.split('T')[0] ?? ''
+        date: bill.fecha?.split('T')[0] ?? '',
+        idCategory: bill.id_categoria
       })
     )
   ]

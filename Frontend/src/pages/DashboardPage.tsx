@@ -1,8 +1,16 @@
 import { convertValue } from '../utils/formatters'
 
-import { ChartLine, TrendingUp, CreditCard } from 'lucide-react'
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
-
+import { ChartLine, TrendingUp, CreditCard, ChartPie } from 'lucide-react'
+import {
+  CartesianGrid,
+  Label,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  XAxis,
+  YAxis
+} from 'recharts'
 import {
   ChartConfig,
   ChartContainer,
@@ -21,9 +29,24 @@ import useGroupedActivityData from '../hooks/useGroupedActivityData'
 function DashboardPage() {
   const statsData = useStatsData()
   const activityData = useActivityData()
-  const chartData = useGroupedActivityData(activityData)
+  const { groupedByMonth, groupedByCategory } =
+    useGroupedActivityData(activityData)
+
+  console.log('Categorias', groupedByCategory)
 
   const chartConfig = {
+    alimentacion: {
+      label: 'Alimentacion',
+      color: 'hsl(var(--chart-1))'
+    },
+    'salud-y-belleza': {
+      label: 'Salud y Belleza',
+      color: 'hsl(var(--chart-2))'
+    },
+    electronicos: {
+      label: 'Electronicos',
+      color: 'hsl(var(--chart-3))'
+    },
     gastos: {
       color: '#f87171',
       label: 'Gastos'
@@ -93,10 +116,10 @@ function DashboardPage() {
           Visión general de tus finanzas en los últimos 30 días
         </p>
 
-        <ChartContainer config={chartConfig} className="max-h-96">
+        <ChartContainer config={chartConfig} className="aspect-square max-h-96">
           <LineChart
             accessibilityLayer
-            data={chartData}
+            data={groupedByMonth}
             margin={{
               left: 20,
               right: 12
@@ -110,12 +133,6 @@ function DashboardPage() {
               tickMargin={8}
               tickFormatter={(value) => value.slice(0, 3)}
               className="text-gray-500 font-semibold"
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tickFormatter={(value) => convertValue(value)}
             />
             <ChartTooltip
               cursor={false}
@@ -157,8 +174,65 @@ function DashboardPage() {
         ))}
       </article>
 
-      <article className="lg:col-span-3 lg:row-span-2 md:row-start-5 lg:row-start-4">
-        8
+      <article className="grid justify-items-stretch lg:col-span-3 lg:row-span-2 md:row-start-5 lg:row-start-4 bg-white rounded-2xl shadow-md p-6">
+        <span className="flex items-center space-x-2">
+          <ChartPie color="#9333EA" />
+          <h3 className="text-2xl font-semibold">Gastos Mensuales</h3>
+        </span>
+        <p className="text-sm mb-5">Distribución de tus gastos por categoría</p>
+
+        <ChartContainer config={chartConfig} className="aspect-square max-h-96">
+          <PieChart accessibilityLayer>
+            <ChartTooltip
+              cursor={true}
+              content={<ChartTooltipContent hideLabel />}
+            />
+            <Pie
+              data={groupedByCategory}
+              dataKey="gasto"
+              nameKey="category"
+              innerRadius={85}
+              strokeWidth={5}
+              paddingAngle={3}
+            >
+              <Label
+                content={({ viewBox }) => {
+                  if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
+                    return (
+                      <text
+                        x={viewBox.cx}
+                        y={viewBox.cy}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                      >
+                        <tspan
+                          x={viewBox.cx}
+                          y={viewBox.cy}
+                          className="fill-foreground text-3xl font-semibold"
+                        >
+                          {convertValue(
+                            groupedByCategory.reduce(
+                              (acc, { gasto }) => acc + gasto,
+                              0
+                            )
+                          )}
+                        </tspan>
+                        <tspan
+                          x={viewBox.cx}
+                          y={(viewBox.cy || 0) + 24}
+                          className="fill-muted-foreground"
+                        >
+                          Gastos
+                        </tspan>
+                      </text>
+                    )
+                  }
+                  return null
+                }}
+              />
+            </Pie>
+          </PieChart>
+        </ChartContainer>
       </article>
       <div className="lg:col-span-3 lg:row-span-2 lg:col-start-4 md:row-start-5 lg:row-start-4">
         9
