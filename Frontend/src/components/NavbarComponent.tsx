@@ -1,5 +1,5 @@
 import { Button, RangeValue } from '@heroui/react'
-import { FiMenu, FiUser, FiBell } from 'react-icons/fi'
+import { FiUser, FiBell } from 'react-icons/fi'
 import { useAuth } from '../contexts/AuthContext'
 import {
   DateValue,
@@ -10,13 +10,9 @@ import {
 import { DateRangePicker } from '@heroui/date-picker'
 import { useDataContext } from '../contexts/DataContext'
 
-import { FC } from 'react'
+import { SidebarTrigger } from './ui/sidebar'
 
-interface NavbarComponentProps {
-  handle: () => void
-}
-
-const NavbarComponent: FC<NavbarComponentProps> = ({ handle }) => {
+const NavbarComponent = () => {
   const { logout, user } = useAuth()
 
   const defaultRange: RangeValue<DateValue> = {
@@ -29,15 +25,13 @@ const NavbarComponent: FC<NavbarComponentProps> = ({ handle }) => {
   return (
     <nav className="max-h-36 bg-white shadow-sm px-4 py-6 flex flex-col">
       <div className="flex justify-between items-center">
-        <FiMenu
-          className="text-gray-500 hover:text-gray-700 focus:outline-none lg:hidden cursor-pointer"
-          onClick={handle}
-          size={24}
-          aria-label="Toggle Sidebar"
-        />
-        <h2 className="text-lg lg:text-2xl font-bold">
-          Bienvenido {user?.nombre}
-        </h2>
+        <span className="flex items-center space-x-2">
+          <SidebarTrigger />
+          <h2 className="text-lg lg:text-2xl font-bold">
+            Bienvenido {user?.nombre}
+          </h2>
+        </span>
+
         <div className="flex items-center space-x-4">
           <button
             className="text-gray-500 hover:text-gray-700"

@@ -8,8 +8,7 @@ import {
   LineChart,
   Pie,
   PieChart,
-  XAxis,
-  YAxis
+  XAxis
 } from 'recharts'
 import {
   ChartConfig,
@@ -67,7 +66,7 @@ function DashboardPage() {
   }
 
   return (
-    <main className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl::grid-cols-[2fr,repeat(4,1fr)] gap-4">
+    <main className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-[2fr,repeat(4,1fr)] gap-4">
       {statsData.map((stat, index) =>
         index === 0 ? (
           <StatCard
@@ -87,7 +86,7 @@ function DashboardPage() {
         )
       )}
 
-      <article className="flex flex-col relative p-6 bg-white rounded-2xl shadow-md lg:col-span-1 sm:col-span-2 md:col-start-3 md:row-start-1 lg:col-start-6">
+      <article className="flex flex-col relative p-6 bg-white rounded-2xl shadow-md col-span-2 sm:col-span-1 lg:col-span-2 lg:row-start-2 lg:row-span-2 xl:row-start-1 xl:col-span-1 xl:row-span-1 xl:col-start-6">
         <span className="flex items-center justify-between mb-3 w-full space-x-2">
           <h3 className="text-sm font-medium">Acciones Rápidas</h3>
         </span>
@@ -107,7 +106,7 @@ function DashboardPage() {
         </div>
       </article>
 
-      <article className="grid justify-items-stretch lg:col-span-4 lg:row-start-2 md:col-span-2 md:row-span-1 lg:row-span-2 bg-white rounded-2xl shadow-md p-6">
+      <article className="grid justify-items-stretch col-span-2 lg:col-span-4 lg:row-span-1 xl:col-span-4 xl:row-start-2 xl:row-span-2 bg-white rounded-2xl shadow-md p-6">
         <span className="flex items-center space-x-2">
           <ChartLine color="#9333EA" />
           <h3 className="text-2xl font-semibold">Resumen Financiero</h3>
@@ -157,7 +156,7 @@ function DashboardPage() {
         </ChartContainer>
       </article>
 
-      <article className="bg-white p-6 rounded-2xl shadow-md md:col-span-1 md:row-span-1 lg:col-span-2 lg:row-span-2">
+      <article className="bg-white p-6 rounded-2xl shadow-md col-span-2 sm:col-span-1 lg:col-span-2 lg:row-span-2 lg:row-start-2 xl:row-start-2">
         <span className="flex items-center space-x-2">
           <CreditCard color="#9333EA" />
           <h3 className="text-2xl font-semibold">Transacciones Recientes</h3>
@@ -174,7 +173,7 @@ function DashboardPage() {
         ))}
       </article>
 
-      <article className="grid justify-items-stretch lg:col-span-3 lg:row-span-2 md:row-start-5 lg:row-start-4 bg-white rounded-2xl shadow-md p-6">
+      <article className="grid justify-items-stretch sm:row-start-5 col-span-2 sm:col-span-1 lg:col-span-2 xl:col-span-3 xl:row-span-2 xl:row-start-4 bg-white rounded-2xl shadow-md p-6">
         <span className="flex items-center space-x-2">
           <ChartPie color="#9333EA" />
           <h3 className="text-2xl font-semibold">Gastos Mensuales</h3>
@@ -234,10 +233,10 @@ function DashboardPage() {
           </PieChart>
         </ChartContainer>
       </article>
-      <div className="lg:col-span-3 lg:row-span-2 lg:col-start-4 md:row-start-5 lg:row-start-4">
+      <div className="xl:col-span-3 xl:row-span-2 xl:col-start-4 xl:row-start-4">
         9
       </div>
-      <div className="lg:col-span-6 md:row-start-6 lg:row-start-6">10</div>
+      <div className="xl:col-span-6 xl:row-start-6">10</div>
     </main>
   )
 }
