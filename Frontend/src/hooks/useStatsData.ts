@@ -20,7 +20,7 @@ const useStatsData = () => {
     },
     {
       title: 'Gastos',
-      value: `${convertValue(billsData.data.reduce((acc, bill) => acc + (bill.valor || 0), 0))}`,
+      value: `${convertValue(billsData.data.reduce((acc, bill) => acc + Number(bill.valor), 0))}`,
       icon: React.createElement(CreditCard, { color: '#f87171' })
     },
     {
