@@ -6,13 +6,15 @@ const config = {
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
   database: process.env.DATABASE,
-  ssl: {
-    mode: 'require'
-  },
-  connectionTimeoutMillis: 5000,
-  idleTimeoutMillis: 10000
+  ssl:
+    process.env.DB_SSL === 'true'
+      ? { require: true, rejectUnauthorized: false }
+      : false,
+  max: 10,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 5000
 }
 
-const { Client } = pg
+const { Pool } = pg
 
-export const createClient = () => new Client(config)
+export const createPool = () => new Pool(config)

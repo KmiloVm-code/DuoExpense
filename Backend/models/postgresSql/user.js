@@ -2,15 +2,16 @@ import client from '../../db/dbClient.js'
 import { hashPassword } from '../../utils.js'
 
 const validateExistence = async (email) => {
-  const result = await client.query('SELECT * FROM usuario WHERE email = $1', [
-    email
-  ])
+  const result = await client.query(
+    'SELECT * FROM UserAccount WHERE email = $1',
+    [email]
+  )
   return result.rows.length > 0
 }
 
 const validateExistenceById = async (id) => {
   const result = await client.query(
-    'SELECT * FROM usuario WHERE id_usuario = $1',
+    'SELECT * FROM UserAccount WHERE user_id = $1',
     [id]
   )
   return result.rows.length > 0
@@ -22,27 +23,37 @@ export class UserModel {
       const lowerCaseName = name.toLowerCase()
 
       const result = await client.query(
-        'SELECT * FROM usuario WHERE LOWER(nombre) = $1',
+        'SELECT * FROM UserAccount WHERE LOWER(name) = $1',
         [lowerCaseName]
       )
+
+      if (result.rows.length === 0) {
+        return false
+      }
+
       return result.rows
     }
 
-    const result = await client.query('SELECT * FROM usuario')
+    const result = await client.query('SELECT * FROM UserAccount')
     return result.rows
   }
 
   static async getById({ id }) {
     const result = await client.query(
-      'SELECT * FROM usuario WHERE id_usuario = $1',
+      'SELECT * FROM UserAccount WHERE user_id = $1',
       [id]
     )
-    return result.rows
+
+    if (result.rows.length === 0) {
+      return false
+    }
+
+    return result.rows[0]
   }
 
   static async getByEmail({ email }) {
     const result = await client.query(
-      'SELECT * FROM usuario WHERE email = $1',
+      'SELECT * FROM UserAccount WHERE email = $1',
       [email]
     )
 
@@ -64,7 +75,7 @@ export class UserModel {
       const hashedPassword = await hashPassword(password)
 
       const result = await client.query(
-        'INSERT INTO usuario (nombre, email, pass) VALUES ($1, $2, $3) RETURNING *',
+        'INSERT INTO UserAccount (name, email, password_hash) VALUES ($1, $2, $3) RETURNING *',
         [name, email, hashedPassword]
       )
       return result.rows[0]
@@ -81,10 +92,10 @@ export class UserModel {
         return 'User does not exist'
       }
 
-      const hashedPassword = await hashPassword(password)
+      const hashedPassword = password ? await hashPassword(password) : null
 
       const result = await client.query(
-        'UPDATE usuario SET nombre = COALESCE($1, nombre), email = COALESCE($2, email), pass = COALESCE($3, pass) WHERE id_usuario = $4 RETURNING *',
+        'UPDATE UserAccount SET name = COALESCE($1, name), email = COALESCE($2, email), password_hash = COALESCE($3, password_hash) WHERE user_id = $4 RETURNING *',
         [name, email, hashedPassword, id]
       )
       return result.rows[0]
@@ -97,10 +108,10 @@ export class UserModel {
   static async delete({ id }) {
     const exists = await validateExistenceById(id)
     if (!exists) {
-      return 'User does not exist'
+      return false
     }
 
-    await client.query('DELETE FROM usuario WHERE id_usuario = $1', [id])
-    return 'User deleted'
+    await client.query('DELETE FROM UserAccount WHERE user_id = $1', [id])
+    return true
   }
 }

@@ -11,8 +11,10 @@
     "start:frontend": "npm --prefix frontend start",
     "start:backend": "npm --prefix backend start:postgres",
     "dev:all": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:all:local": "concurrently \"npm run dev:frontend\" \"npm run dev:backend:local\"",
     "dev:frontend": "npm --prefix frontend run dev",
-    "dev:backend": "npm --prefix backend run dev:postgres"
+    "dev:backend": "npm --prefix backend run dev:postgres",
+    "dev:backend:local": "npm --prefix backend run dev:postgres:local"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.26.1",

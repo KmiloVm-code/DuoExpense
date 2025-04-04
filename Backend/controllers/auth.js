@@ -35,7 +35,10 @@ export class AuthController {
         })
       }
 
-      const passwordMatch = await comparePassword(password, user[0].pass)
+      const passwordMatch = await comparePassword(
+        password,
+        user[0].password_hash
+      )
 
       if (!passwordMatch) {
         return res.status(401).json({
@@ -44,14 +47,14 @@ export class AuthController {
       }
 
       const publicUser = {
-        id_usuario: user[0].id_usuario,
-        nombre: user[0].nombre,
+        user_id: user[0].user_id,
+        name: user[0].name,
         email: user[0].email,
-        fecha_creacion: user[0].fecha_creacion
+        created_at: user[0].created_at
       }
 
       const token = jwt.sign(
-        { id: user[0].id_usuario, name: user[0].nombre },
+        { id: user[0].user_id, name: user[0].name },
         SECRET_KEY,
         {
           expiresIn: '1h'

@@ -12,3 +12,15 @@ export const hashPassword = async (password) => {
 
 export const comparePassword = async (password, hash) =>
   bcrypt.compare(password, hash)
+
+// Function to calculate safe dates, avoiding errors like "February 31st"
+export function calculateSafeDate(originalDate, monthsAhead) {
+  const date = new Date(originalDate)
+  date.setMonth(date.getMonth() + monthsAhead)
+
+  // Adjustment to prevent overflow (e.g., 31/01 + 1 month → 28/02 or 31/03)
+  if (date.getDate() !== new Date(originalDate).getDate()) {
+    date.setDate(0) // Last day of the previous month
+  }
+  return date.toISOString()
+}

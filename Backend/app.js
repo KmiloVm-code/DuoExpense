@@ -3,10 +3,29 @@ import { createUserRouter } from './routes/users.js'
 import { createIngresosRouter } from './routes/ingresos.js'
 import { createAuthRouter } from './routes/auth.js'
 import { createGastoRouter } from './routes/gasto.js'
+import { createCategoryRouter } from './routes/category.js'
+import { createPaymentMethodRouter } from './routes/paymentMethod.js'
+import { createCreditCardRouter } from './routes/creditCard.js'
+import { createBudgetRouter } from './routes/budget.js'
+import { createFinancialTransactionRouter } from './routes/financialTransaction.js'
+import { createActivityLogRouter } from './routes/activityLog.js'
+import { createBalanceRouter } from './routes/balance.js'
 import jwt from 'jsonwebtoken'
 import cookieParser from 'cookie-parser'
+import cors from 'cors'
 
-export const createApp = ({ userModel, ingresoModel, gastoModel }) => {
+export const createApp = ({
+  userModel,
+  ingresoModel,
+  gastoModel,
+  categoryModel,
+  paymentMethodModel,
+  creditCardModel,
+  budgetModel,
+  financialTransactionModel,
+  activityLogModel,
+  balanceModel
+}) => {
   const app = express()
   app.use(json())
   app.use(cookieParser())
@@ -14,13 +33,23 @@ export const createApp = ({ userModel, ingresoModel, gastoModel }) => {
   app.disable('x-powered-by')
   const port = process.env.PORT ?? 3000
 
-  app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'http://localhost:5173')
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE')
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-    res.header('Access-Control-Allow-Credentials', 'true')
-    res.header('access-control-allow-body', 'true')
+  const allowedOrigins = [
+    'https://qnjffl48-5173.use2.devtunnels.ms',
+    'https://qnjffl48-3000.use2.devtunnels.ms'
+  ]
 
+  app.use(
+    cors({
+      origin: allowedOrigins,
+      credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+      allowBody: true,
+      WebSocket: true
+    })
+  )
+
+  app.use((req, res, next) => {
     const token = req.cookies.access_token
     req.session = { user: null }
 
@@ -68,6 +97,16 @@ export const createApp = ({ userModel, ingresoModel, gastoModel }) => {
   app.use('/ingresos', createIngresosRouter({ ingresoModel }))
   app.use('/auth', createAuthRouter({ userModel }))
   app.use('/gastos', createGastoRouter({ gastoModel }))
+  app.use('/categories', createCategoryRouter({ categoryModel }))
+  app.use('/payment-methods', createPaymentMethodRouter({ paymentMethodModel }))
+  app.use('/credit-cards', createCreditCardRouter({ creditCardModel }))
+  app.use('/budget', createBudgetRouter({ budgetModel }))
+  app.use(
+    '/financial-transactions',
+    createFinancialTransactionRouter({ financialTransactionModel })
+  )
+  app.use('/activity-log', createActivityLogRouter({ activityLogModel }))
+  app.use('/balance', createBalanceRouter({ balanceModel }))
 
   app.use((req, res) => {
     res.status(404).send('<h1>404 - Not Found</h1>')

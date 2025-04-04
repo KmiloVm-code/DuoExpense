@@ -8,14 +8,15 @@ export class UserController {
   getAll = async (req, res) => {
     const { name } = req.query
     const users = await this.userModel.getAll({ name })
-    res.json(users)
+    if (users) return res.json(users)
+    res.status(404).send('<h1>User not found</h1>')
   }
 
   getById = async (req, res) => {
     const { id } = req.params
     const user = await this.userModel.getById({ id })
     if (user) return res.json(user)
-    res.status(404).send('<h1>404 - Not Found</h1>')
+    res.status(404).send('<h1>User not found</h1>')
   }
 
   create = async (req, res) => {
@@ -54,9 +55,11 @@ export class UserController {
     const result = await this.userModel.delete({ id })
 
     if (result === false) {
-      return res.status(404).json({ message: 'User not found' })
+      return res.status(404).json({
+        error: 'User not found'
+      })
     }
 
-    return res.json({ message: result })
+    return res.status(200).json({ message: 'User deleted successfully' })
   }
 }
