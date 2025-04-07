@@ -4,7 +4,7 @@ export interface Transaction {
   categoryId: number
   paymentMethodId: number
   cardId: number
-  type: 'income' | 'expense | savings'
+  type: 'income' | 'expense' | 'savings'
   amount: number
   description: string
   transactionDate: Date
