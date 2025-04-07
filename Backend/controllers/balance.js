@@ -11,6 +11,14 @@ export class BalanceController {
     res.status(404).send('<h1>Balance not found</h1>')
   }
 
+  getCurrentBalance = async (req, res) => {
+    const { id } = req.params
+    const filters = req.query
+    const balance = await this.balanceModel.getCurrentBalance({ id, filters })
+    if (balance) return res.json(balance)
+    res.status(404).send('<h1>Balance not found</h1>')
+  }
+
   refreshBalance = async (req, res) => {
     const result = await this.balanceModel.refreshBalance()
     if (result)

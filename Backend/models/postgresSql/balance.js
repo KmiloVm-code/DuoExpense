@@ -11,15 +11,29 @@ export class BalanceModel {
       values.push(startDate, endDate)
     }
 
-    console.log('Query:', query)
-    console.log('Values:', values)
-
     try {
       const result = await client.query(query, values)
       if (result.rows.length === 0) {
         return false
       }
       return result.rows
+    } catch (error) {
+      console.error(error)
+      return 'Error'
+    }
+  }
+
+  static async getCurrentBalance({ id, filters }) {
+    const { startDate, endDate } = filters
+    const query = 'SELECT * FROM get_balance_in_range($1, $2, $3) AS balance'
+    const values = [id, startDate, endDate]
+
+    try {
+      const result = await client.query(query, values)
+      if (result.rows.length === 0) {
+        return false
+      }
+      return result.rows[0]
     } catch (error) {
       console.error(error)
       return 'Error'

@@ -35,7 +35,9 @@ export const createApp = ({
 
   const allowedOrigins = [
     'https://qnjffl48-5173.use2.devtunnels.ms',
-    'https://qnjffl48-3000.use2.devtunnels.ms'
+    'https://qnjffl48-3000.use2.devtunnels.ms',
+    'http://localhost:5173',
+    'http://localhost:3000'
   ]
 
   app.use(
@@ -77,10 +79,11 @@ export const createApp = ({
     try {
       const data = jwt.verify(token, process.env.SECRET_KEY)
       const user = await userModel.getById({ id: data.id })
-      const { ...publicUser } = user[0]
+      const { ...publicUser } = user
       return res.status(200).json({ message: 'Sesión válida', publicUser })
-    } catch {
-      return res.status(401).json({ message: 'Sesión inválida o expirada' })
+    } catch (error) {
+      console.error(error)
+      return res.status(401).send('<h1>Unauthorized</h1>')
     }
   })
 
