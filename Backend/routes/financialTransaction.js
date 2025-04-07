@@ -19,6 +19,10 @@ export const createFinancialTransactionRouter = ({
     '/recurring/:id',
     financialTransactionController.getAllRecurring
   )
+  financialTransactionRouter.get(
+    '/last/:userId',
+    financialTransactionController.getLastTransaction
+  )
   financialTransactionRouter.post('/', financialTransactionController.create)
   financialTransactionRouter.patch(
     '/:id',

@@ -113,6 +113,22 @@ export class FinancialTransactionModel {
     }
   }
 
+  static async getLastTransaction({ userId }) {
+    try {
+      const result = await client.query(
+        'SELECT * FROM FinancialTransaction WHERE user_id = $1 ORDER BY transaction_date DESC LIMIT 5',
+        [userId]
+      )
+      if (result.rows.length === 0) {
+        return false
+      }
+      return result.rows
+    } catch (error) {
+      console.error('Error fetching last transaction:', error)
+      return false
+    }
+  }
+
   static async create({ input }) {
     const {
       userId,

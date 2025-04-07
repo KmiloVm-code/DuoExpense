@@ -36,6 +36,16 @@ export class FinancialTransactionController {
     res.status(404).send('<h1>Recurring Financial Transaction not found</h1>')
   }
 
+  getLastTransaction = async (req, res) => {
+    const { userId } = req.params
+    const transactions =
+      await this.financialTransactionModel.getLastTransaction({
+        userId
+      })
+    if (transactions) return res.json(transactions)
+    res.status(404).send('<h1>Financial Transaction not found</h1>')
+  }
+
   create = async (req, res) => {
     if (req.body.transactionDate) {
       req.body.transactionDate = new Date(req.body.transactionDate)
