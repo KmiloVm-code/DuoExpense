@@ -1,10 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-
-interface User {
-  nombre?: string
-  id_usuario?: string
-  email?: string
-}
+import { User } from '../types/User'
+import { logoutService, checkAuthService } from '../services/auth'
 
 interface AuthContextProps {
   isAuthenticated: boolean
@@ -13,9 +9,6 @@ interface AuthContextProps {
   logout: () => void
   user: User
 }
-
-const API_URL_CHECK_SESSION = `${import.meta.env.VITE_API_URL}/auth/check-session`
-const API_URL_LOGOUT = `${import.meta.env.VITE_API_URL}/auth/logout`
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined)
 
@@ -30,26 +23,24 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(true)
-  const [user, setUser] = useState<User>({})
+  const [user, setUser] = useState<User>({
+    name: '',
+    email: '',
+    password: ''
+  })
 
   const checkAuthentication = async () => {
+    setLoading(true)
     try {
-      if (window.location.pathname !== '/login') {
-        const response = await fetch(API_URL_CHECK_SESSION, {
-          method: 'GET',
-          credentials: 'include'
-        })
-
-        if (response.ok) {
-          const data = await response.json()
-          setUser(data.publicUser)
-          setIsAuthenticated(true)
-        }
+      const response = await checkAuthService()
+      if (response) {
+        setIsAuthenticated(true)
+        setUser(response)
       } else {
         setIsAuthenticated(false)
       }
     } catch (error) {
-      console.log(error)
+      console.error('Error checking authentication', error)
       setIsAuthenticated(false)
     } finally {
       setLoading(false)
@@ -62,22 +53,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = (user: User) => {
     setIsAuthenticated(true)
+    console.log('Login2', user)
     setUser(user)
   }
 
   const logout = async () => {
-    setIsAuthenticated(false)
-    setUser({})
-    await fetch(API_URL_LOGOUT, {
-      method: 'post',
-      credentials: 'include'
-    })
-      .then(() => {
-        console.log('Logged out')
-      })
-      .catch((error) => {
-        console.log(error)
-      })
+    setLoading(true)
+    try {
+      const response = await logoutService()
+      if (response) {
+        setIsAuthenticated(false)
+        setUser({
+          name: '',
+          email: '',
+          password: ''
+        })
+      }
+    } catch (error) {
+      console.error('Error logging out', error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const value = useMemo(

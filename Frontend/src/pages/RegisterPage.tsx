@@ -36,8 +36,8 @@ function RegisterPage() {
       await registerService(user)
       const userLogged = await loginService(email, password)
       setLoading(false)
-      if (userLogged.publicUser) {
-        login(userLogged.publicUser)
+      if (userLogged) {
+        login(userLogged)
         navigate('/')
       }
     } catch {

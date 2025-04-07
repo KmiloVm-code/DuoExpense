@@ -21,8 +21,8 @@ function LoginPage() {
     try {
       const user = await loginService(email, password)
       setLoading(false)
-      if (user.publicUser) {
-        login(user.publicUser)
+      if (user) {
+        login(user)
         navigate('/')
       }
     } catch {
