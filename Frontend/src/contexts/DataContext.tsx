@@ -17,10 +17,14 @@ import {
 import { useAuth } from './AuthContext'
 import { DateValue, getLocalTimeZone, today } from '@internationalized/date'
 import { RangeValue } from '@heroui/react'
+import { useBalance } from '../hooks/useBalance'
+import { Balance } from '../types/Balance'
 
 interface DataContextType {
   pickerValue: RangeValue<DateValue>
   setPickerValue: (value: RangeValue<DateValue>) => void
+
+  balance: Balance
 
   billsData: {
     data: Bill[]
@@ -59,11 +63,15 @@ interface DataProviderProps {
 
 export const DataProvider = ({ children }: DataProviderProps) => {
   const { user } = useAuth()
-  const idUsuario = user?.id_usuario ?? ''
+  const idUsuario = user?.userId ?? ''
   const [pickerValue, setPickerValue] = useState<RangeValue<DateValue>>({
     start: today(getLocalTimeZone()).subtract({ months: 1 }),
     end: today(getLocalTimeZone())
   })
+  const { balance } = useBalance(
+    pickerValue.start?.toString() ?? '',
+    pickerValue.end?.toString() ?? ''
+  )
 
   console.log(pickerValue)
 
@@ -95,9 +103,10 @@ export const DataProvider = ({ children }: DataProviderProps) => {
       billsData,
       icomeData,
       pickerValue,
-      setPickerValue
+      setPickerValue,
+      balance
     }),
-    [billsData, icomeData, pickerValue, setPickerValue]
+    [billsData, icomeData, pickerValue, setPickerValue, balance]
   )
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>
