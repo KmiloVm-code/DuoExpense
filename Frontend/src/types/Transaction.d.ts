@@ -12,3 +12,12 @@ export interface Transaction {
   recurring?: boolean
   months?: number
 }
+
+export interface SummaryTransaction {
+  date?: Date
+  total_income?: number
+  total_expense?: number
+  total_savings?: number
+  total?: number
+  category?: string
+}

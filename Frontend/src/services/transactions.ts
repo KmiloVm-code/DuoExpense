@@ -1,4 +1,4 @@
-import { Transaction } from '../types/Transaction'
+import { Transaction, SummaryTransaction } from '../types/Transaction'
 
 const API_URL = `${import.meta.env.VITE_API_URL}/financial-transactions`
 const options: RequestInit = {
@@ -59,5 +59,48 @@ export const getLastTransactionsService = async (
     return transactions
   } catch {
     throw new Error('Error al obtener las transacciones')
+  }
+}
+
+export const getTransactionsSummaryService = async (
+  {
+    filters
+  }: {
+    filters?: string
+  } = {},
+  userId: string
+): Promise<SummaryTransaction[]> => {
+  try {
+    const res = await fetch(`${API_URL}/summary/${userId}?${filters}`, options)
+    if (!res.ok) throw new Error('Error al obtener el resumen de transacciones')
+    return await res.json()
+  } catch {
+    throw new Error('Error al obtener el resumen de transacciones')
+  }
+}
+
+export const getExpensesByCategoryService = async (
+  {
+    filters
+  }: {
+    filters?: string
+  } = {},
+  userId: string
+): Promise<SummaryTransaction[]> => {
+  try {
+    const res = await fetch(`${API_URL}/expenses/${userId}?${filters}`, options)
+    if (!res.ok) throw new Error('Error al obtener el resumen de transacciones')
+    const data = await res.json()
+    const transactions: SummaryTransaction[] = data.map(
+      (transaction: SummaryTransaction) => ({
+        ...transaction,
+        total_expense:
+          parseInt(transaction.total_expense?.toString() || '0') || 0,
+        fill: `var(--color-${transaction.category?.toLowerCase()})`
+      })
+    )
+    return transactions
+  } catch {
+    throw new Error('Error al obtener el resumen de transacciones')
   }
 }
