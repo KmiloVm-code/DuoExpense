@@ -46,6 +46,30 @@ export class FinancialTransactionController {
     res.status(404).send('<h1>Financial Transaction not found</h1>')
   }
 
+  getFinancialSummary = async (req, res) => {
+    const { userId } = req.params
+    const filters = req.query
+    const transactions =
+      await this.financialTransactionModel.getFinancialSummary({
+        userId,
+        filters
+      })
+    if (transactions) return res.json(transactions)
+    res.status(404).send('<h1>Financial Transaction not found</h1>')
+  }
+
+  getExpensesByCategory = async (req, res) => {
+    const { userId } = req.params
+    const filters = req.query
+    const transactions =
+      await this.financialTransactionModel.getExpensesByCategory({
+        userId,
+        filters
+      })
+    if (transactions) return res.json(transactions)
+    res.status(404).send('<h1>Financial Transaction not found</h1>')
+  }
+
   create = async (req, res) => {
     if (req.body.transactionDate) {
       req.body.transactionDate = new Date(req.body.transactionDate)

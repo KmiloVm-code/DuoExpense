@@ -129,6 +129,59 @@ export class FinancialTransactionModel {
     }
   }
 
+  static async getFinancialSummary({ userId, filters }) {
+    const { startDate, endDate } = filters
+    let query = `SELECT
+                transaction_date::DATE AS date,
+                SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END) AS total_income,
+                SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) AS total_expense
+            FROM FinancialTransaction
+            WHERE user_id = $1`
+    const values = [userId]
+    if (startDate && endDate) {
+      query += ' AND transaction_date BETWEEN $2 AND $3'
+      values.push(startDate, endDate)
+    }
+    query += ' GROUP BY date ORDER BY date'
+    try {
+      const result = await client.query(query, values)
+      if (result.rows.length === 0) {
+        return false
+      }
+      return result.rows
+    } catch (error) {
+      console.error('Error fetching financial summary:', error)
+      return false
+    }
+  }
+
+  static async getExpensesByCategory({ userId, filters }) {
+    const { startDate, endDate } = filters
+    let query = `SELECT
+                category.name AS category,
+                SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) AS total_expense
+            FROM FinancialTransaction
+            JOIN category ON FinancialTransaction.category_id = category.category_id
+            WHERE user_id = $1 AND type = 'expense'`
+    const values = [userId]
+    if (startDate && endDate) {
+      query += ' AND transaction_date BETWEEN $2 AND $3'
+      values.push(startDate, endDate)
+    }
+    query += ' GROUP BY category ORDER BY category'
+    try {
+      const result = await client.query(query, values)
+
+      if (result.rows.length === 0) {
+        return false
+      }
+      return result.rows
+    } catch (error) {
+      console.error('Error fetching expenses by category:', error)
+      return false
+    }
+  }
+
   static async create({ input }) {
     const {
       userId,

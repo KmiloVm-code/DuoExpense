@@ -23,6 +23,14 @@ export const createFinancialTransactionRouter = ({
     '/last/:userId',
     financialTransactionController.getLastTransaction
   )
+  financialTransactionRouter.get(
+    '/summary/:userId',
+    financialTransactionController.getFinancialSummary
+  )
+  financialTransactionRouter.get(
+    '/expenses/:userId',
+    financialTransactionController.getExpensesByCategory
+  )
   financialTransactionRouter.post('/', financialTransactionController.create)
   financialTransactionRouter.patch(
     '/:id',
