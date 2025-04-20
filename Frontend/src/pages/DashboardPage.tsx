@@ -22,16 +22,21 @@ import StatCard from '../components/StatCard'
 import QuickActionButton from '../components/QuickActionButton'
 import RecentTransaction from '../components/RecentTransaction'
 import useStatsData from '../hooks/useStatsData'
-import useActivityData from '../hooks/useActivityData'
-import useGroupedActivityData from '../hooks/useGroupedActivityData'
+import { useData } from '../hooks/useData'
+import { Transaction } from '../types/Transaction'
+import { useDataContext } from '../contexts/DataContext'
+import { useChartData } from '../hooks/useChartData'
+import BudgetComponent from '../components/BudgetComponent'
 
 function DashboardPage() {
   const statsData = useStatsData()
-  const activityData = useActivityData()
-  const { groupedByMonth, groupedByCategory } =
-    useGroupedActivityData(activityData)
+  const { pickerValue } = useDataContext()
+  const { lastTransaction } = useData()
 
-  console.log('Categorias', groupedByCategory)
+  const { chartSummary, chartSummaryByCategory } = useChartData(
+    pickerValue.start.toString(),
+    pickerValue.end.toString()
+  )
 
   const chartConfig = {
     alimentacion: {
@@ -55,15 +60,6 @@ function DashboardPage() {
       label: 'Ingresos'
     }
   } satisfies ChartConfig
-
-  const filterActivityData = () => {
-    return activityData
-      .sort(
-        (a, b) =>
-          new Date(b.date || '').getTime() - new Date(a.date || '').getTime()
-      )
-      .slice(0, 5)
-  }
 
   return (
     <main className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-[2fr,repeat(4,1fr)] gap-4">
@@ -111,46 +107,98 @@ function DashboardPage() {
           <ChartLine color="#9333EA" />
           <h3 className="text-2xl font-semibold">Resumen Financiero</h3>
         </span>
-        <p className="text-sm mb-5">
-          Visión general de tus finanzas en los últimos 30 días
-        </p>
+        <p className="text-sm mb-5">Visión general de tus finanzas</p>
 
         <ChartContainer config={chartConfig} className="aspect-square max-h-96">
           <LineChart
             accessibilityLayer
-            data={groupedByMonth}
-            margin={{
-              left: 20,
-              right: 12
-            }}
+            data={chartSummary}
+            margin={{ top: 30, right: 30, left: 30, bottom: 0 }}
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
-              tickLine={false}
+              dataKey="date"
               axisLine={false}
+              tickLine={false}
               tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
-              className="text-gray-500 font-semibold"
+              tickFormatter={(value) => {
+                const date = new Date(value)
+                const options: Intl.DateTimeFormatOptions = {
+                  month: 'short',
+                  day: '2-digit'
+                }
+                return date.toLocaleDateString('es-ES', options)
+              }}
+              interval={0}
             />
             <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent className="w-48" />}
+              cursor={true}
+              contentStyle={{
+                backgroundColor: 'white',
+                border: 'none',
+                padding: 0,
+                boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
+              }}
+              labelFormatter={(value) => {
+                const date = new Date(value)
+                const options: Intl.DateTimeFormatOptions = {
+                  month: 'long',
+                  day: '2-digit'
+                }
+                return date.toLocaleDateString('es-ES', options)
+              }}
+              formatter={(value, name) => {
+                const formattedValue = convertValue(value as number)
+                const label =
+                  name === 'total_income'
+                    ? chartConfig.ingresos.label
+                    : chartConfig.gastos.label
+                return [
+                  <span key={0} className="text-gray-500 font-semibold">
+                    {label}
+                  </span>,
+                  <span key={1} className="text-gray-500 font-semibold">
+                    {formattedValue}
+                  </span>
+                ]
+              }}
+              active={true}
+              content={<ChartTooltipContent />}
             />
-            <ChartLegend content={<ChartLegendContent />} />
+            <ChartLegend
+              verticalAlign="bottom"
+              align="center"
+              iconType="circle"
+              iconSize={10}
+              wrapperStyle={{ paddingTop: 0, paddingBottom: 0 }}
+              layout="vertical"
+              payload={[
+                {
+                  dataKey: 'ingresos',
+                  color: chartConfig.ingresos.color,
+                  value: chartConfig.ingresos.label
+                },
+                {
+                  dataKey: 'gastos',
+                  color: chartConfig.gastos.color,
+                  value: chartConfig.gastos.label
+                }
+              ]}
+              content={<ChartLegendContent />}
+            />
             <Line
               type="monotone"
-              dataKey="ingresos"
+              dataKey="total_income"
               stroke="#34d399"
               strokeWidth={2}
-              dot={false}
+              dot={true}
             />
             <Line
               type="monotone"
-              dataKey="gastos"
+              dataKey="total_expense"
               stroke="#f87171"
               strokeWidth={2}
-              dot={false}
+              dot={true}
             />
           </LineChart>
         </ChartContainer>
@@ -162,13 +210,13 @@ function DashboardPage() {
           <h3 className="text-2xl font-semibold">Transacciones Recientes</h3>
         </span>
         <p className="text-sm mb-3">Tus últimas 5 transacciones</p>
-        {filterActivityData().map((activity) => (
+        {lastTransaction.map((transaction: Transaction) => (
           <RecentTransaction
-            key={activity.id}
-            title={activity.text}
-            date={activity.date}
-            type={activity.type}
-            amount={activity.amount}
+            key={transaction.transactionId}
+            title={transaction.description}
+            date={(transaction.transactionDate as Date).toISOString()}
+            type={transaction.type}
+            amount={convertValue(transaction.amount)}
           />
         ))}
       </article>
@@ -187,8 +235,8 @@ function DashboardPage() {
               content={<ChartTooltipContent hideLabel />}
             />
             <Pie
-              data={groupedByCategory}
-              dataKey="gasto"
+              data={chartSummaryByCategory}
+              dataKey="total_expense"
               nameKey="category"
               innerRadius={85}
               strokeWidth={5}
@@ -210,8 +258,8 @@ function DashboardPage() {
                           className="fill-foreground text-3xl font-semibold"
                         >
                           {convertValue(
-                            groupedByCategory.reduce(
-                              (acc, { gasto }) => acc + gasto,
+                            chartSummaryByCategory.reduce(
+                              (acc, curr) => acc + (curr.total_expense || 0),
                               0
                             )
                           )}
@@ -233,9 +281,10 @@ function DashboardPage() {
           </PieChart>
         </ChartContainer>
       </article>
-      <div className="xl:col-span-3 xl:row-span-2 xl:col-start-4 xl:row-start-4">
-        9
-      </div>
+
+      <article className="bg-white p-6 rounded-2xl shadow-md col-span-2 xl:col-span-3 xl:row-span-2 xl:col-start-4 xl:row-start-4">
+        <BudgetComponent />
+      </article>
       <div className="xl:col-span-6 xl:row-start-6">10</div>
     </main>
   )

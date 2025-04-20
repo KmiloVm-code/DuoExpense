@@ -21,6 +21,7 @@ export const useBalance = (startDate: string, endDate: string) => {
       endDate
     }).toString()
     try {
+      if (!userId) return
       const balanceData = await getCurrentBalance({ filters }, userId)
       setBalance(balanceData)
     } catch (error) {

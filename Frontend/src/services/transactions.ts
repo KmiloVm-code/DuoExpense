@@ -51,7 +51,7 @@ export const getLastTransactionsService = async (
 ): Promise<Transaction[]> => {
   try {
     const res = await fetch(`${API_URL}/last/${userId}?${filters}`, options)
-    if (!res.ok) throw new Error('Error al obtener las transacciones')
+    if (!res.ok) return []
     const data = await res.json()
     const transactions: Transaction[] = data.map(
       (transaction: ApiTransaction) => mapApiTransaction(transaction)
@@ -72,7 +72,7 @@ export const getTransactionsSummaryService = async (
 ): Promise<SummaryTransaction[]> => {
   try {
     const res = await fetch(`${API_URL}/summary/${userId}?${filters}`, options)
-    if (!res.ok) throw new Error('Error al obtener el resumen de transacciones')
+    if (!res.ok) return []
     return await res.json()
   } catch {
     throw new Error('Error al obtener el resumen de transacciones')
@@ -89,7 +89,7 @@ export const getExpensesByCategoryService = async (
 ): Promise<SummaryTransaction[]> => {
   try {
     const res = await fetch(`${API_URL}/expenses/${userId}?${filters}`, options)
-    if (!res.ok) throw new Error('Error al obtener el resumen de transacciones')
+    if (!res.ok) return []
     const data = await res.json()
     const transactions: SummaryTransaction[] = data.map(
       (transaction: SummaryTransaction) => ({
@@ -99,6 +99,7 @@ export const getExpensesByCategoryService = async (
         fill: `var(--color-${transaction.category?.toLowerCase()})`
       })
     )
+    console.log('transactions: ', transactions)
     return transactions
   } catch {
     throw new Error('Error al obtener el resumen de transacciones')

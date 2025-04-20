@@ -4,7 +4,7 @@ import { TrendingUp, CreditCard, CircleDollarSign } from 'lucide-react'
 import React from 'react'
 
 const useStatsData = () => {
-  const { balance } = useDataContext(undefined)
+  const { balance } = useDataContext()
 
   const statsData = [
     {
