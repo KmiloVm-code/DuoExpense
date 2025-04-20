@@ -6,10 +6,32 @@ export class BudgetController {
   }
 
   getAll = async (req, res) => {
+    const { userId } = req.params
+    if (!userId) {
+      return res.status(400).json({
+        error: 'User ID is required'
+      })
+    }
     const filters = req.query
-    const budgets = await this.budgetModel.getAll({ filters })
+    const budgets = await this.budgetModel.getAll({ userId, filters })
     if (budgets) return res.json(budgets)
     res.status(404).send('<h1>Budget not found</h1>')
+  }
+
+  getBudgetSummary = async (req, res) => {
+    const { userId } = req.params
+    if (!userId) {
+      return res.status(400).json({
+        error: 'User ID is required'
+      })
+    }
+    const filters = req.query
+    const budgetSummary = await this.budgetModel.getBudgetSummary({
+      userId,
+      filters
+    })
+    if (budgetSummary) return res.json(budgetSummary)
+    res.status(404).send('<h1>Budget summary not found</h1>')
   }
 
   create = async (req, res) => {

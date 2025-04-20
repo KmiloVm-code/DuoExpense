@@ -3,7 +3,8 @@ import client from '../../db/dbClient.js'
 export class BudgetModel {
   static async getAll({ filters }) {
     const { userId, categoryId } = filters
-    let query = 'SELECT * FROM budget WHERE 1=1'
+    let query =
+      'SELECT budget.*, category.name AS category FROM budget JOIN category ON budget.category_id = category.category_id WHERE 1=1'
     const values = []
     if (userId) {
       query += ` AND user_id = $${values.length + 1}`
@@ -13,6 +14,18 @@ export class BudgetModel {
       query += ` AND category_id = $${values.length + 1}`
       values.push(categoryId)
     }
+
+    const result = await client.query(query, values)
+    if (result.rows.length === 0) {
+      return false
+    }
+    return result.rows
+  }
+
+  static async getBudgetSummary({ userId, filters }) {
+    const { startDate, endDate } = filters
+    const query = 'SELECT * FROM get_budget_summary($1, $2, $3)'
+    const values = [userId, startDate, endDate]
     const result = await client.query(query, values)
     if (result.rows.length === 0) {
       return false

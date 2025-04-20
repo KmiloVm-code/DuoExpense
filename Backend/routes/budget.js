@@ -6,7 +6,8 @@ export const createBudgetRouter = ({ budgetModel }) => {
 
   const budgetControler = new BudgetController({ budgetModel })
 
-  budgetRouter.get('/', budgetControler.getAll)
+  budgetRouter.get('/:userId', budgetControler.getAll)
+  budgetRouter.get('/summary/:userId', budgetControler.getBudgetSummary)
   budgetRouter.post('/', budgetControler.create)
   budgetRouter.patch('/:id', budgetControler.update)
   budgetRouter.delete('/:id', budgetControler.delete)

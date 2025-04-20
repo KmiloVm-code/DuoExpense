@@ -158,3 +158,40 @@ CREATE TRIGGER trigger_log_transaction
 AFTER INSERT ON FinancialTransaction
 FOR EACH ROW
 EXECUTE FUNCTION log_transaction();
+
+CREATE OR REPLACE FUNCTION get_budget_summary(
+    user_id_param UUID,
+    start_date_param DATE,
+    end_date_param DATE
+)
+RETURNS TABLE (
+    category VARCHAR,
+    budgeted DECIMAL,
+    spent DECIMAL,
+    difference DECIMAL,
+    usage_percentage DECIMAL
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        c.name AS category,
+        b.amount AS budgeted,
+        COALESCE(SUM(ft.amount), 0) AS spent,
+        COALESCE(SUM(ft.amount), 0) - b.amount AS difference,
+        CASE 
+            WHEN b.amount = 0 THEN 0
+            ELSE ROUND((COALESCE(SUM(ft.amount), 0) / b.amount) * 100, 2)
+        END AS usage_percentage
+    FROM budget b
+    JOIN category c ON b.category_id = c.category_id
+    LEFT JOIN financialtransaction ft 
+        ON ft.category_id = b.category_id
+        AND ft.user_id = b.user_id
+        AND ft.type = 'expense'
+        AND ft.transaction_date BETWEEN start_date_param AND end_date_param
+    WHERE b.user_id = user_id_param
+    AND b.start_date <= end_date_param
+    AND b.end_date >= start_date_param
+    GROUP BY c.name, b.amount;
+END;
+$$ LANGUAGE plpgsql;
