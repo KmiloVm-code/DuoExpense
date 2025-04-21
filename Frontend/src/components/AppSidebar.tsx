@@ -18,14 +18,9 @@ const items = [
     icon: LayoutDashboard
   },
   {
-    title: 'Gastos',
-    url: '/bills',
+    title: 'Transacciones',
+    url: '/transactions',
     icon: CreditCard
-  },
-  {
-    title: 'Ingresos',
-    url: '/ingresos',
-    icon: HandCoins
   }
 ]
 

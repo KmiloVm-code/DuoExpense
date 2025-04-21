@@ -216,7 +216,7 @@ function DashboardPage() {
             title={transaction.description}
             date={(transaction.transactionDate as Date).toISOString()}
             type={transaction.type}
-            amount={convertValue(transaction.amount)}
+            amount={convertValue(Number(transaction.amount))}
           />
         ))}
       </article>

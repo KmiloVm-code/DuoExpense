@@ -2,15 +2,17 @@ export interface Transaction {
   transactionId: number
   userId: string
   categoryId: number
-  paymentMethodId: number
+  paymentMethodId?: number
   cardId: number
   type: 'income' | 'expense' | 'savings'
-  amount: number
+  amount: number | string
   description: string
-  transactionDate: Date
+  transactionDate: Date | string
   recurringTransactionId?: number
   recurring?: boolean
   months?: number
+  category?: string
+  paymentMethod?: string
 }
 
 export interface SummaryTransaction {

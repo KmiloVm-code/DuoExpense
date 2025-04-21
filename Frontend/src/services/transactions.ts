@@ -22,6 +22,8 @@ interface ApiTransaction {
   recurring_transaction_id?: number
   recurring?: boolean
   months?: number
+  category?: string
+  paymentmethod?: string
 }
 
 function mapApiTransaction(apiTransaction: ApiTransaction): Transaction {
@@ -37,7 +39,30 @@ function mapApiTransaction(apiTransaction: ApiTransaction): Transaction {
     transactionDate: new Date(apiTransaction.transaction_date),
     recurringTransactionId: apiTransaction.recurring_transaction_id,
     recurring: apiTransaction.recurring,
-    months: apiTransaction.months
+    months: apiTransaction.months,
+    category: apiTransaction.category,
+    paymentMethod: apiTransaction.paymentmethod
+  }
+}
+
+export const getTransactionsService = async (
+  {
+    filters
+  }: {
+    filters?: string
+  } = {},
+  userId: string
+): Promise<Transaction[]> => {
+  try {
+    const res = await fetch(`${API_URL}/${userId}?${filters}`, options)
+    if (!res.ok) return []
+    const data = await res.json()
+    const transactions: Transaction[] = data.map(
+      (transaction: ApiTransaction) => mapApiTransaction(transaction)
+    )
+    return transactions
+  } catch {
+    throw new Error('Error al obtener las transacciones')
   }
 }
 
