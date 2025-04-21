@@ -9,17 +9,10 @@ export class FinancialTransactionController {
   }
 
   getAll = async (req, res) => {
+    const { userId } = req.params
     const filters = req.query
     const transactions = await this.financialTransactionModel.getAll({
-      filters
-    })
-    if (transactions) return res.json(transactions)
-    res.status(404).send('<h1>Financial Transaction not found</h1>')
-  }
-
-  getDateRange = async (req, res) => {
-    const filters = req.query
-    const transactions = await this.financialTransactionModel.getDateRange({
+      userId,
       filters
     })
     if (transactions) return res.json(transactions)

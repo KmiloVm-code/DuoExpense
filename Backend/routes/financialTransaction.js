@@ -10,11 +10,11 @@ export const createFinancialTransactionRouter = ({
     financialTransactionModel
   })
 
-  financialTransactionRouter.get('/', financialTransactionController.getAll)
   financialTransactionRouter.get(
-    '/dateRange',
-    financialTransactionController.getDateRange
+    '/:userId',
+    financialTransactionController.getAll
   )
+
   financialTransactionRouter.get(
     '/recurring/:id',
     financialTransactionController.getAllRecurring

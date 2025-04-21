@@ -2,57 +2,11 @@ import client from '../../db/dbClient.js'
 import { calculateSafeDate } from '../../utils.js'
 
 export class FinancialTransactionModel {
-  static async getAll({ filters }) {
-    const { userId, categoryId, paymentMethodId, cardId, type } = filters
-    let query = 'SELECT * FROM FinancialTransaction WHERE 1=1'
-    const values = []
-    if (userId) {
-      query += ` AND user_id = $${values.length + 1}`
-      values.push(userId)
-    }
-    if (categoryId) {
-      query += ` AND category_id = $${values.length + 1}`
-      values.push(categoryId)
-    }
-    if (paymentMethodId) {
-      query += ` AND payment_method_id = $${values.length + 1}`
-      values.push(paymentMethodId)
-    }
-    if (cardId) {
-      query += ` AND card_id = $${values.length + 1}`
-      values.push(cardId)
-    }
-    if (type) {
-      query += ` AND type = $${values.length + 1}`
-      values.push(type)
-    }
-
-    query += ' ORDER BY transaction_date DESC'
-
-    try {
-      const result = await client.query(query, values)
-      if (result.rows.length === 0) {
-        return false
-      }
-      return result.rows
-    } catch (error) {
-      console.error('Error fetching transactions:', error)
-      return false
-    }
-  }
-
-  static async getDateRange({ filters }) {
-    const {
-      userId,
-      categoryId,
-      paymentMethodId,
-      cardId,
-      type,
-      startDate,
-      endDate
-    } = filters
-
-    let query = 'SELECT * FROM FinancialTransaction WHERE 1=1'
+  static async getAll({ userId, filters }) {
+    const { categoryId, paymentMethodId, cardId, type, startDate, endDate } =
+      filters
+    let query =
+      'SELECT FinancialTransaction.*, category.name AS category, PaymentMethod.name AS PaymentMethod FROM FinancialTransaction JOIN category ON FinancialTransaction.category_id = category.category_id JOIN PaymentMethod ON FinancialTransaction.payment_method_id = PaymentMethod.payment_method_id WHERE user_id = $1'
     const values = []
     if (userId) {
       query += ` AND user_id = $${values.length + 1}`
