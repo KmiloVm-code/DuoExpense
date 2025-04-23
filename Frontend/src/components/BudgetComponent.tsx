@@ -6,16 +6,16 @@ import { convertValue } from '../utils/formatters'
 const BudgetComponent = () => {
   const { budgetSummary } = useData()
 
-  function ramdomBgColor() {
-    const colors = [
-      'purple',
-      'blue',
-      'green',
-      'red',
-      'yellow',
-      'pink',
-      'orange'
-    ]
+  const colors = [
+    'bg-purple-500',
+    'bg-blue-500',
+    'bg-green-500',
+    'bg-red-500',
+    'bg-yellow-500',
+    'bg-pink-500',
+    'bg-orange-500'
+  ]
+  const getRandomColor = () => {
     const randomIndex = Math.floor(Math.random() * colors.length)
     return colors[randomIndex]
   }
@@ -55,8 +55,8 @@ const BudgetComponent = () => {
               <Progress
                 value={budget.usage_percentage}
                 max={100}
-                className="bg-gray-300 rounded-lg"
-                indicatorClassName={`bg-${ramdomBgColor()}-500 rounded-lg`}
+                className="h-3 bg-gray-200 rounded-full"
+                indicatorClassName={`h-3 rounded-full ${getRandomColor()}`}
               />
               <div className="text-sm font-normal text-gray-500">
                 {budget.usage_percentage > 100 ? (

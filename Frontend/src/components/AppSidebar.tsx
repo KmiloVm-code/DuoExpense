@@ -51,9 +51,9 @@ const AppSidebar = () => {
                   >
                     <Link
                       to={item.url}
-                      className={`flex items-center rounded-md hover:bg-purple-500 hover:text-white ${
+                      className={`flex items-center rounded-md hover:text-white p-2 transition-colors duration-200 ease-in-out ${
                         location.pathname === item.url
-                          ? 'bg-[#9333EA] text-white'
+                          ? 'bg-primary text-white'
                           : ''
                       }`}
                     >
