@@ -64,6 +64,7 @@ export class FinancialTransactionController {
   }
 
   create = async (req, res) => {
+    const { userId } = req.params
     if (req.body.transactionDate) {
       req.body.transactionDate = new Date(req.body.transactionDate)
     }
@@ -77,6 +78,7 @@ export class FinancialTransactionController {
 
     const newFinancialTransaction = await this.financialTransactionModel.create(
       {
+        userId,
         input: result.data
       }
     )

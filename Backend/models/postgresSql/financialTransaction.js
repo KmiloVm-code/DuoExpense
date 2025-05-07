@@ -136,9 +136,8 @@ export class FinancialTransactionModel {
     }
   }
 
-  static async create({ input }) {
+  static async create({ userId, input }) {
     const {
-      userId,
       categoryId,
       paymentMethodId,
       cardId,
@@ -154,7 +153,18 @@ export class FinancialTransactionModel {
       await client.query('BEGIN')
 
       const result = await client.query(
-        'INSERT INTO FinancialTransaction (user_id, category_id, payment_method_id, card_id, type, amount, description, transaction_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+        `WITH inserted_transaction AS (
+          INSERT INTO FinancialTransaction (user_id, category_id, payment_method_id, card_id, type, amount, description, transaction_date) 
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
+          RETURNING *
+        )
+        SELECT 
+          ft.*,
+          c.name as category,
+          pm.name as paymentMethod
+        FROM inserted_transaction ft
+        LEFT JOIN Category c ON ft.category_id = c.category_id
+        LEFT JOIN PaymentMethod pm ON ft.payment_method_id = pm.payment_method_id`,
         [
           userId,
           categoryId || null,
@@ -190,7 +200,20 @@ export class FinancialTransactionModel {
           )
         }
 
-        const insertQuery = `INSERT INTO FinancialTransaction (user_id, category_id, payment_method_id, card_id, type, amount, description, transaction_date, recurring_transaction_id) VALUES ${placeholders.join(', ')}`
+        const insertQuery = `
+          WITH inserted_recurring AS (
+            INSERT INTO FinancialTransaction (user_id, category_id, payment_method_id, card_id, type, amount, description, transaction_date, recurring_transaction_id) 
+            VALUES ${placeholders.join(', ')} 
+            RETURNING *
+          )
+          SELECT 
+            ft.*,
+            c.name as category,
+            pm.name as paymentMethod
+          FROM inserted_recurring ft
+          LEFT JOIN Category c ON ft.category_id = c.category_id
+          LEFT JOIN PaymentMethod pm ON ft.payment_method_id = pm.payment_method_id`
+
         await client.query(insertQuery, values)
       }
       await client.query('COMMIT')
@@ -216,7 +239,25 @@ export class FinancialTransactionModel {
 
     try {
       const result = await client.query(
-        'UPDATE FinancialTransaction SET category_id = COALESCE($1, category_id), payment_method_id = COALESCE($2, payment_method_id), card_id = COALESCE($3, card_id), type = COALESCE($4, type), amount = COALESCE($5, amount), description = COALESCE($6, description), transaction_date = COALESCE($7, transaction_date) WHERE transaction_id = $8 RETURNING *',
+        `WITH updated_transaction AS (
+          UPDATE FinancialTransaction 
+          SET category_id = COALESCE($1, category_id),
+              payment_method_id = COALESCE($2, payment_method_id), 
+              card_id = COALESCE($3, card_id),
+              type = COALESCE($4, type),
+              amount = COALESCE($5, amount),
+              description = COALESCE($6, description),
+              transaction_date = COALESCE($7, transaction_date)
+          WHERE transaction_id = $8
+          RETURNING *
+        )
+        SELECT 
+          ft.*,
+          c.name as category,
+          pm.name as paymentMethod
+        FROM updated_transaction ft
+        LEFT JOIN Category c ON ft.category_id = c.category_id
+        LEFT JOIN PaymentMethod pm ON ft.payment_method_id = pm.payment_method_id`,
         [
           categoryId || null,
           paymentMethodId || null,

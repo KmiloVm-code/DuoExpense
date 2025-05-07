@@ -1,7 +1,6 @@
 import z from 'zod'
 
 export const FinancialTransactionSchema = z.object({
-  userId: z.string().uuid(),
   categoryId: z.number().int().nullable(),
   paymentMethodId: z.number().int().nullable(),
   cardId: z.number().int().nullable(),
@@ -10,7 +9,7 @@ export const FinancialTransactionSchema = z.object({
   description: z.string().optional(),
   transactionDate: z.date().default(new Date()),
   recurring: z.boolean().default(false),
-  months: z.number().int().optional(),
+  months: z.number().int().optional().nullable(),
   recurringTransactionId: z.number().int().optional()
 })
 

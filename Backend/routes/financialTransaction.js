@@ -31,7 +31,10 @@ export const createFinancialTransactionRouter = ({
     '/expenses/:userId',
     financialTransactionController.getExpensesByCategory
   )
-  financialTransactionRouter.post('/', financialTransactionController.create)
+  financialTransactionRouter.post(
+    '/:userId',
+    financialTransactionController.create
+  )
   financialTransactionRouter.patch(
     '/:id',
     financialTransactionController.update
