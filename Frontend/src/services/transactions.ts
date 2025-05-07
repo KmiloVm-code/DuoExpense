@@ -32,16 +32,19 @@ function mapApiTransaction(apiTransaction: ApiTransaction): Transaction {
     userId: apiTransaction.user_id,
     categoryId: apiTransaction.category_id,
     paymentMethodId: apiTransaction.payment_method_id,
-    cardId: apiTransaction.card_id,
+    paymentMethod: apiTransaction.paymentmethod || 'Efectivo',
+    cardId: apiTransaction.card_id || null,
     type: apiTransaction.type,
     amount: apiTransaction.amount,
     description: apiTransaction.description,
-    transactionDate: new Date(apiTransaction.transaction_date),
+    transactionDate: new Date(apiTransaction.transaction_date)
+      .toISOString()
+      .split('T')[0],
     recurringTransactionId: apiTransaction.recurring_transaction_id,
-    recurring: apiTransaction.recurring,
-    months: apiTransaction.months,
+    recurring: apiTransaction.recurring || false,
+    months: apiTransaction.months || null,
     category: apiTransaction.category,
-    paymentMethod: apiTransaction.paymentmethod
+    installments: null
   }
 }
 
@@ -128,5 +131,64 @@ export const getExpensesByCategoryService = async (
     return transactions
   } catch {
     throw new Error('Error al obtener el resumen de transacciones')
+  }
+}
+
+export const createTransactionService = async (
+  transaction: Transaction,
+  userId: string
+): Promise<Transaction> => {
+  try {
+    const res = await fetch(`${API_URL}/${userId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(transaction),
+      credentials: 'include' as RequestCredentials
+    })
+    if (!res.ok) throw new Error('Error al crear la transacción')
+    const data = await res.json()
+    return mapApiTransaction(data)
+  } catch (error) {
+    console.error('Error creating transaction:', error)
+    throw new Error('Error al crear la transacción')
+  }
+}
+
+export const updateTransactionService = async (
+  transaction: Transaction,
+  transactionId: string
+): Promise<Transaction> => {
+  try {
+    const res = await fetch(`${API_URL}/${transactionId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(transaction),
+      credentials: 'include' as RequestCredentials
+    })
+    if (!res.ok) throw new Error('Error al actualizar la transacción')
+    const data = await res.json()
+    return mapApiTransaction(data)
+  } catch (error) {
+    console.error('Error updating transaction:', error)
+    throw new Error('Error al actualizar la transacción')
+  }
+}
+
+export const deleteTransactionService = async (
+  transactionId: string
+): Promise<void> => {
+  try {
+    const res = await fetch(`${API_URL}/${transactionId}`, {
+      method: 'DELETE',
+      credentials: 'include' as RequestCredentials
+    })
+    if (!res.ok) throw new Error('Error al eliminar la transacción')
+  } catch (error) {
+    console.error('Error deleting transaction:', error)
+    throw new Error('Error al eliminar la transacción')
   }
 }

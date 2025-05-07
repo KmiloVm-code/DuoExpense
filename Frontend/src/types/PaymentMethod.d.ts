@@ -1,4 +1,4 @@
-export interface PimentMethod {
+export interface PaymentMethod {
   paymentMethodId: string
   name: string
 }

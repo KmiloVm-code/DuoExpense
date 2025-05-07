@@ -214,7 +214,7 @@ function DashboardPage() {
           <RecentTransaction
             key={transaction.transactionId}
             title={transaction.description}
-            date={(transaction.transactionDate as Date).toISOString()}
+            date={transaction.transactionDate}
             type={transaction.type}
             amount={convertValue(Number(transaction.amount))}
           />

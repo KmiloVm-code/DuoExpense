@@ -9,6 +9,20 @@ const options: RequestInit = {
   credentials: 'include' as RequestCredentials
 }
 
+interface apiCategory {
+  category_id: number
+  name: string
+  parent_category_id?: number | null
+}
+
+function mapApiCategory(apiCategory: apiCategory): Category {
+  return {
+    categoryId: apiCategory.category_id,
+    name: apiCategory.name,
+    parentCategoryId: apiCategory.parent_category_id ?? undefined
+  }
+}
+
 export const getCategoriesService = async ({
   filters
 }: { filters?: string } = {}): Promise<Category[]> => {
@@ -17,7 +31,9 @@ export const getCategoriesService = async ({
     if (!res.ok) throw new Error('Error al obtener las categorías')
 
     const data = await res.json()
-    return data
+    const categories: apiCategory[] = data
+    const mappedCategories: Category[] = categories.map(mapApiCategory)
+    return mappedCategories
   } catch {
     throw new Error('Error al obtener las categorías')
   }

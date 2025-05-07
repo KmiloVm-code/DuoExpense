@@ -36,7 +36,10 @@ function DataTable<TData, TValue>({
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead className="text-purple-600" key={header.id}>
+                  <TableHead
+                    className={`text-purple-600 ${header.id === 'actions' ? 'text-right' : ''}`}
+                    key={header.id}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
