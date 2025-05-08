@@ -90,16 +90,18 @@ const TransactionPage = () => {
       accessorKey: 'amount',
       header: 'Amount',
       cell: ({ row }) => {
-        const isIncome = row.original.type === 'income'
+        const type = row.original.type
         return (
           <span
             className={`${
-              isIncome
+              type === 'income'
                 ? 'text-green-500 font-semibold'
-                : 'text-red-500 font-semibold'
+                : type === 'savings'
+                  ? 'text-purple-600 font-semibold'
+                  : 'text-red-500 font-semibold'
             }`}
           >
-            {isIncome ? '+' : '-'}
+            {type === 'expense' ? '-' : '+'}
             {convertValue(row.getValue('amount'))}
           </span>
         )
