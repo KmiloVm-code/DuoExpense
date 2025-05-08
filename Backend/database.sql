@@ -81,7 +81,7 @@ CREATE INDEX idx_transaction_user_date ON FinancialTransaction (user_id, transac
 CREATE OR REPLACE FUNCTION update_transaction_date()
 RETURNS TRIGGER AS $$
 BEGIN
-  IF NEW.transaction_date IS DISTINCT FROM OLD.transaction_date THEN
+  IF NEW.transaction_date IS NULL THEN
     NEW.transaction_date := now();
   END IF;
   RETURN NEW;

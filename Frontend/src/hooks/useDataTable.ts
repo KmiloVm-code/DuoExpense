@@ -7,26 +7,33 @@ import {
 } from '../services/transactions'
 import { Transaction } from '../types/Transaction'
 import { useAuth } from '../contexts/AuthContext'
+import { useDataContext } from '../contexts/DataContext'
 
-export const useDataTable = (filters: string) => {
+export const useDataTable = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<unknown | null>(null)
   const { user } = useAuth()
   const userId = user?.userId || ''
+  const { pickerValue } = useDataContext()
 
   const getTransactions = useCallback(async () => {
     try {
       if (!userId) return
       setLoading(true)
-      const transactionsData = await getTransactionsService({ filters }, userId)
+      const startDate = pickerValue.start.toString()
+      const endDate = pickerValue.end.toString()
+      const transactionsData = await getTransactionsService(
+        { filters: `&startDate=${startDate}&endDate=${endDate}` },
+        userId
+      )
       setTransactions(transactionsData)
     } catch (error) {
       setError(error)
     } finally {
       setLoading(false)
     }
-  }, [filters, userId])
+  }, [userId, pickerValue])
 
   useEffect(() => {
     getTransactions()
