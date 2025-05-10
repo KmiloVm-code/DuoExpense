@@ -3,7 +3,7 @@ import { convertDate } from '../utils/formatters'
 type RecentTransactionProps = {
   title: string
   date: string
-  type: 'income' | 'expense' | 'savings'
+  type: string
   amount: string
 }
 
