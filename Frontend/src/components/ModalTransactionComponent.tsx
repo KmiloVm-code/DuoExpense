@@ -117,8 +117,8 @@ const CardBrands = [
 interface ModalTransactionComponentProps {
   open: boolean
   onClose: () => void
-  transaction: Transaction | null
-  isEditing: boolean
+  transaction?: Transaction | null
+  isEditing?: boolean
   onSubmit: (data: TransactionFormData) => void
 }
 
