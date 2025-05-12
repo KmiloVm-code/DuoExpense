@@ -4,16 +4,19 @@ import App from './App.tsx'
 import './index.css'
 import { AuthProvider } from './contexts/AuthContext.tsx'
 import { BrowserRouter } from 'react-router-dom'
-import { DataProvider } from './contexts/DataContext.tsx'
+import { DateRangeProvider } from './contexts/DateRangeContext.tsx'
+import { RefreshProvider } from './contexts/RefreshContext.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <DataProvider>
-          <App />
-        </DataProvider>
-      </AuthProvider>
-    </BrowserRouter>
+    <RefreshProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <DateRangeProvider>
+            <App />
+          </DateRangeProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </RefreshProvider>
   </StrictMode>
 )

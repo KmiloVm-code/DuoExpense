@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { getCurrentBalance } from '../services/balance'
 import { Balance } from '../types/Balance'
 import { useAuth } from '../contexts/AuthContext'
+import { useRefresh } from '../contexts/RefreshContext'
 
 export const useBalance = (startDate: string, endDate: string) => {
   const [balance, setBalance] = useState<Balance>({
@@ -14,6 +15,7 @@ export const useBalance = (startDate: string, endDate: string) => {
   const [error, setError] = useState<unknown | null>(null)
   const { user } = useAuth()
   const userId = user?.userId || ''
+  const { refreshKey } = useRefresh()
 
   const getBalance = useCallback(async () => {
     const filters = new URLSearchParams({
@@ -31,7 +33,7 @@ export const useBalance = (startDate: string, endDate: string) => {
 
   useEffect(() => {
     getBalance()
-  }, [getBalance])
+  }, [getBalance, refreshKey])
 
   return { balance, error }
 }

@@ -24,7 +24,7 @@ import RecentTransaction from '../components/RecentTransaction'
 import useStatsData from '../hooks/useStatsData'
 import { useData } from '../hooks/useData'
 import { Transaction } from '../types/Transaction'
-import { useDataContext } from '../contexts/DataContext'
+import { useDateRange } from '../contexts/DateRangeContext'
 import { useChartData } from '../hooks/useChartData'
 import BudgetComponent from '../components/BudgetComponent'
 import { useHandlerModal } from '../hooks/useHandlerModal'
@@ -32,13 +32,13 @@ import ModalTransactionComponent from '../components/ModalTransactionComponent'
 
 function DashboardPage() {
   const statsData = useStatsData()
-  const { pickerValue } = useDataContext()
+  const { dateRange } = useDateRange()
   const { lastTransaction } = useData()
   const { handleOpen, handleClose, handleSubmit, isOpen } = useHandlerModal()
 
   const { chartSummary, chartSummaryByCategory } = useChartData(
-    pickerValue.start.toString(),
-    pickerValue.end.toString()
+    dateRange.start?.toString() ?? '',
+    dateRange.end?.toString() ?? ''
   )
 
   const chartConfig = {

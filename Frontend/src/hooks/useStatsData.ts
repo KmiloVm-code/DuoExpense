@@ -1,10 +1,15 @@
-import { useDataContext } from '../contexts/DataContext'
+import { useDateRange } from '../contexts/DateRangeContext'
 import { convertValue } from '../utils/formatters'
 import { TrendingUp, CreditCard, CircleDollarSign } from 'lucide-react'
 import React from 'react'
+import { useBalance } from '../hooks/useBalance'
 
 const useStatsData = () => {
-  const { balance } = useDataContext()
+  const { dateRange } = useDateRange()
+  const { balance } = useBalance(
+    dateRange.start?.toString() ?? '',
+    dateRange.end?.toString() ?? ''
+  )
 
   const statsData = [
     {

@@ -6,33 +6,9 @@ import { ColumnDef } from '@tanstack/react-table'
 import DataTable from '../components/TableComponent'
 import ModalTransactionComponent from '../components/ModalTransactionComponent'
 import { useHandlerModal } from '../hooks/useHandlerModal'
-import { z } from 'zod'
-
-const transactionSchema = z.object({
-  type: z.string().min(1),
-  description: z.string().min(1),
-  amount: z.coerce.number().min(0),
-  paymentMethodId: z.number().min(1),
-  paymentMethod: z.string().min(1),
-  categoryId: z.number().min(1),
-  transactionDate: z.string().min(1),
-  recurring: z.boolean().default(false),
-  months: z.number().min(0).nullable(),
-  cardId: z.number().min(1).nullable(),
-  installments: z.number().min(1).optional().nullable()
-})
-
-type TransactionFormData = z.infer<typeof transactionSchema>
 
 const TransactionPage = () => {
-  const {
-    transactions,
-    loading,
-    error,
-    createTransaction,
-    updateTransaction,
-    deleteTransaction
-  } = useDataTable()
+  const { transactions, loading, error } = useDataTable()
 
   const {
     isOpen,
@@ -40,8 +16,10 @@ const TransactionPage = () => {
     handleOpen,
     handleClose,
     handleEdit,
+    handleDelete,
+    handleSubmit,
     isEditing
-  } = useHandlerModal<Transaction>()
+  } = useHandlerModal()
 
   const columns: ColumnDef<Transaction>[] = [
     {
@@ -152,22 +130,6 @@ const TransactionPage = () => {
       }
     }
   ]
-
-  function handleDelete(transaction: Transaction) {
-    deleteTransaction(transaction.transactionId?.toString() || '')
-  }
-
-  const handleSubmit = (data: TransactionFormData) => {
-    if (editingTransaction?.transactionId) {
-      updateTransaction({
-        ...data,
-        transactionId: editingTransaction.transactionId
-      })
-    } else {
-      createTransaction(data)
-    }
-    handleClose()
-  }
 
   return (
     <>

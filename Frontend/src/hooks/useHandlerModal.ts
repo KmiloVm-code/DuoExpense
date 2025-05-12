@@ -1,10 +1,14 @@
 import { useState } from 'react'
+import { Transaction } from '../types/Transaction'
+import { useTransaction } from './useTransaction'
 
-export function useHandlerModal<T>() {
+export function useHandlerModal() {
   const [isOpen, setIsOpen] = useState(false)
-  const [editingItem, setEditingItem] = useState<T | null>(null)
+  const [editingItem, setEditingItem] = useState<Transaction | null>(null)
+  const { createTransaction, updateTransaction, deleteTransaction } =
+    useTransaction()
 
-  const handleOpen = (item?: T) => {
+  const handleOpen = (item?: Transaction) => {
     if (item) {
       setEditingItem(item)
     } else {
@@ -18,9 +22,25 @@ export function useHandlerModal<T>() {
     setIsOpen(false)
   }
 
-  const handleEdit = (item: T) => {
+  const handleEdit = (item: Transaction) => {
     setEditingItem(item)
     setIsOpen(true)
+  }
+
+  function handleDelete(transaction: Transaction) {
+    deleteTransaction(transaction.transactionId?.toString() || '')
+  }
+
+  const handleSubmit = (data: Transaction) => {
+    if (editingItem?.transactionId) {
+      updateTransaction({
+        ...data,
+        transactionId: editingItem.transactionId
+      })
+    } else {
+      createTransaction(data)
+    }
+    handleClose()
   }
 
   return {
@@ -29,6 +49,8 @@ export function useHandlerModal<T>() {
     handleOpen,
     handleClose,
     handleEdit,
+    handleDelete,
+    handleSubmit,
     isEditing: !!editingItem
   }
 }

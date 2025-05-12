@@ -5,6 +5,7 @@ import {
   getExpensesByCategoryService
 } from '../services/transactions'
 import { SummaryTransaction } from '../types/Transaction'
+import { useRefresh } from '../contexts/RefreshContext'
 
 export const useChartData = (startDate: string, endDate: string) => {
   const [chartSummary, setChartSummary] = useState<SummaryTransaction[]>([])
@@ -14,6 +15,7 @@ export const useChartData = (startDate: string, endDate: string) => {
   const [error, setError] = useState<unknown | null>(null)
   const { user } = useAuth()
   const userId = user?.userId || ''
+  const { refreshKey } = useRefresh()
 
   const getChartSummaryData = useCallback(async () => {
     const filters = new URLSearchParams({
@@ -50,7 +52,7 @@ export const useChartData = (startDate: string, endDate: string) => {
   useEffect(() => {
     getChartSummaryData()
     getChartSummaryByCategory()
-  }, [getChartSummaryData, getChartSummaryByCategory])
+  }, [getChartSummaryData, getChartSummaryByCategory, refreshKey])
 
   return { chartSummary, chartSummaryByCategory, error }
 }

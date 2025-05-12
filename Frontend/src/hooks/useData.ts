@@ -4,7 +4,8 @@ import { Transaction } from '../types/Transaction'
 import { useAuth } from '../contexts/AuthContext'
 import { getBudgetsService, getBudgetSummaryService } from '../services/budget'
 import { Budget, BudgetSummary } from '../types/Budget'
-import { useDataContext } from '../contexts/DataContext'
+import { useDateRange } from '../contexts/DateRangeContext'
+import { useRefresh } from '../contexts/RefreshContext'
 
 export const useData = () => {
   const [lastTransaction, setLastTransaction] = useState<Transaction[]>([])
@@ -13,7 +14,8 @@ export const useData = () => {
   const [error, setError] = useState<string | null>(null)
   const { user } = useAuth()
   const userId = user?.userId || ''
-  const { pickerValue } = useDataContext()
+  const { dateRange } = useDateRange()
+  const { refreshKey } = useRefresh()
 
   const getLastTransactions = useCallback(async () => {
     try {
@@ -36,7 +38,7 @@ export const useData = () => {
     } catch {
       setError('Error al cargar los datos')
     }
-  }, [userId, pickerValue])
+  }, [userId, dateRange])
 
   const getBudgetSummary = useCallback(async () => {
     try {
@@ -44,8 +46,8 @@ export const useData = () => {
       const fetchedData = await getBudgetSummaryService(
         {
           filters: new URLSearchParams({
-            startDate: pickerValue.start.toString(),
-            endDate: pickerValue.end.toString()
+            startDate: dateRange.start.toString(),
+            endDate: dateRange.end.toString()
           }).toString()
         },
         userId
@@ -56,7 +58,7 @@ export const useData = () => {
     } catch {
       setError('Error al cargar los datos')
     }
-  }, [userId, pickerValue])
+  }, [userId, dateRange])
 
   useEffect(() => {
     if (userId) {
@@ -64,7 +66,7 @@ export const useData = () => {
       getBudgets()
       getBudgetSummary()
     }
-  }, [getLastTransactions, getBudgets, getBudgetSummary, userId])
+  }, [getLastTransactions, getBudgets, getBudgetSummary, userId, refreshKey])
 
   return {
     lastTransaction,
