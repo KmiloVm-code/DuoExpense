@@ -25,6 +25,9 @@ export class BalanceModel {
 
   static async getCurrentBalance({ id, filters }) {
     const { startDate, endDate } = filters
+    if (!startDate || !endDate) {
+      return false
+    }
     const query = 'SELECT * FROM get_balance_in_range($1, $2, $3) AS balance'
     const values = [id, startDate, endDate]
 

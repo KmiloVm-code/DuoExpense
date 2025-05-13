@@ -31,7 +31,7 @@ export class BudgetController {
       filters
     })
     if (budgetSummary) return res.json(budgetSummary)
-    res.status(404).send('<h1>Budget summary not found</h1>')
+    res.status(404).send([])
   }
 
   create = async (req, res) => {

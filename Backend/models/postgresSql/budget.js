@@ -24,6 +24,9 @@ export class BudgetModel {
 
   static async getBudgetSummary({ userId, filters }) {
     const { startDate, endDate } = filters
+    if (!startDate || !endDate) {
+      return false
+    }
     const query = 'SELECT * FROM get_budget_summary($1, $2, $3)'
     const values = [userId, startDate, endDate]
     const result = await client.query(query, values)
