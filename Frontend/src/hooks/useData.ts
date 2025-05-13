@@ -46,8 +46,8 @@ export const useData = () => {
       const fetchedData = await getBudgetSummaryService(
         {
           filters: new URLSearchParams({
-            startDate: dateRange.start.toString(),
-            endDate: dateRange.end.toString()
+            startDate: dateRange?.from?.toISOString() || '',
+            endDate: dateRange?.to?.toISOString() || ''
           }).toString()
         },
         userId

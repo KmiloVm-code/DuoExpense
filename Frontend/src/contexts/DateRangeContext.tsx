@@ -1,10 +1,10 @@
 import { createContext, ReactNode, useContext, useMemo, useState } from 'react'
-import { DateValue, getLocalTimeZone, today } from '@internationalized/date'
-import { RangeValue } from '@heroui/react'
+import { getLocalTimeZone, today } from '@internationalized/date'
+import { DateRange } from 'react-day-picker'
 
 interface DateRangeContextType {
-  dateRange: RangeValue<DateValue>
-  setDateRange: (value: RangeValue<DateValue>) => void
+  dateRange: DateRange | undefined
+  changeDateRange: (dateRange: DateRange) => void
 }
 
 const DateRangeContext = createContext<DateRangeContextType | undefined>(
@@ -24,17 +24,24 @@ interface DateRangeProviderProps {
 }
 
 export const DateRangeProvider = ({ children }: DateRangeProviderProps) => {
-  const [dateRange, setDateRange] = useState<RangeValue<DateValue>>({
-    start: today(getLocalTimeZone()).subtract({ months: 1 }),
-    end: today(getLocalTimeZone())
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: new Date(
+      today(getLocalTimeZone()).subtract({ months: 1 }).toString()
+    ),
+    to: new Date(today(getLocalTimeZone()).toString())
   })
+
+  const changeDateRange = (dateRange: DateRange) => {
+    setDateRange(dateRange)
+  }
 
   const value = useMemo(
     () => ({
       dateRange,
+      changeDateRange,
       setDateRange
     }),
-    [dateRange, setDateRange]
+    [dateRange, changeDateRange, setDateRange]
   )
 
   return (

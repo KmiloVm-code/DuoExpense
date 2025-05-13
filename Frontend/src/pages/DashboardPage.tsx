@@ -24,7 +24,6 @@ import RecentTransaction from '../components/RecentTransaction'
 import useStatsData from '../hooks/useStatsData'
 import { useData } from '../hooks/useData'
 import { Transaction } from '../types/Transaction'
-import { useDateRange } from '../contexts/DateRangeContext'
 import { useChartData } from '../hooks/useChartData'
 import BudgetComponent from '../components/BudgetComponent'
 import { useHandlerModal } from '../hooks/useHandlerModal'
@@ -32,14 +31,10 @@ import ModalTransactionComponent from '../components/ModalTransactionComponent'
 
 function DashboardPage() {
   const statsData = useStatsData()
-  const { dateRange } = useDateRange()
   const { lastTransaction } = useData()
   const { handleOpen, handleClose, handleSubmit, isOpen } = useHandlerModal()
 
-  const { chartSummary, chartSummaryByCategory } = useChartData(
-    dateRange.start?.toString() ?? '',
-    dateRange.end?.toString() ?? ''
-  )
+  const { chartSummary, chartSummaryByCategory } = useChartData()
 
   const chartConfig = {
     alimentacion: {

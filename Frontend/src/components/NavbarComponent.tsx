@@ -7,7 +7,7 @@ import {
   parseDate,
   today
 } from '@internationalized/date'
-import { DateRangePicker } from '@heroui/date-picker'
+import { DateRangePicker } from './ui/DateRangePicker'
 import { useDateRange } from '../contexts/DateRangeContext'
 
 import { SidebarTrigger } from './ui/sidebar'
@@ -15,12 +15,7 @@ import { SidebarTrigger } from './ui/sidebar'
 const NavbarComponent = () => {
   const { logout, user } = useAuth()
 
-  const defaultRange: RangeValue<DateValue> = {
-    start: today(getLocalTimeZone()).subtract({ days: 1 }),
-    end: parseDate(new Date().toISOString().split('T')[0])
-  }
-
-  const { dateRange, setDateRange } = useDateRange()
+  const { changeDateRange } = useDateRange()
 
   return (
     <nav className="max-h-36 bg-white shadow-sm px-4 py-6 flex flex-col">
@@ -52,22 +47,15 @@ const NavbarComponent = () => {
       </div>
 
       <div className="flex items-center space-x-4 mt-4 w-full lg:w-fit justify-center lg:justify-start px-8 lg:px-0">
-        <DateRangePicker
-          value={dateRange}
-          onChange={(value) =>
-            setDateRange
-              ? setDateRange(value as RangeValue<DateValue>)
-              : () => {}
-          }
-          defaultValue={defaultRange}
-          aria-label="Seleccionar rango de fechas"
-        />
+        <DateRangePicker aria-label="Seleccionar rango de fechas" />
         <Button
           color="secondary"
           onPress={() => {
-            setDateRange({
-              start: today(getLocalTimeZone()).subtract({ months: 1 }),
-              end: today(getLocalTimeZone())
+            changeDateRange({
+              from: new Date(
+                today(getLocalTimeZone()).subtract({ months: 1 }).toString()
+              ),
+              to: new Date(today(getLocalTimeZone()).toString())
             })
           }}
         >

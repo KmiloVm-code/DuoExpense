@@ -6,8 +6,9 @@ import {
 } from '../services/transactions'
 import { SummaryTransaction } from '../types/Transaction'
 import { useRefresh } from '../contexts/RefreshContext'
+import { useDateRange } from '../contexts/DateRangeContext'
 
-export const useChartData = (startDate: string, endDate: string) => {
+export const useChartData = () => {
   const [chartSummary, setChartSummary] = useState<SummaryTransaction[]>([])
   const [chartSummaryByCategory, setChartSummaryByCategory] = useState<
     SummaryTransaction[]
@@ -16,11 +17,12 @@ export const useChartData = (startDate: string, endDate: string) => {
   const { user } = useAuth()
   const userId = user?.userId || ''
   const { refreshKey } = useRefresh()
+  const { dateRange } = useDateRange()
 
   const getChartSummaryData = useCallback(async () => {
     const filters = new URLSearchParams({
-      startDate,
-      endDate
+      startDate: dateRange?.from?.toISOString() ?? '',
+      endDate: dateRange?.to?.toISOString() ?? ''
     }).toString()
     try {
       const summaryData = await getTransactionsSummaryService(
@@ -31,12 +33,12 @@ export const useChartData = (startDate: string, endDate: string) => {
     } catch (error) {
       setError(error)
     }
-  }, [startDate, endDate, userId])
+  }, [dateRange, userId])
 
   const getChartSummaryByCategory = useCallback(async () => {
     const filters = new URLSearchParams({
-      startDate,
-      endDate
+      startDate: dateRange?.from?.toISOString() ?? '',
+      endDate: dateRange?.to?.toISOString() ?? ''
     }).toString()
     try {
       const summaryData = await getExpensesByCategoryService(
@@ -47,7 +49,7 @@ export const useChartData = (startDate: string, endDate: string) => {
     } catch (error) {
       setError(error)
     }
-  }, [startDate, endDate, userId])
+  }, [dateRange, userId])
 
   useEffect(() => {
     getChartSummaryData()

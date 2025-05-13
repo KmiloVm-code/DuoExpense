@@ -7,8 +7,8 @@ import { useBalance } from '../hooks/useBalance'
 const useStatsData = () => {
   const { dateRange } = useDateRange()
   const { balance } = useBalance(
-    dateRange.start?.toString() ?? '',
-    dateRange.end?.toString() ?? ''
+    dateRange?.from?.toISOString() ?? '',
+    dateRange?.to?.toISOString() ?? ''
   )
 
   const statsData = [

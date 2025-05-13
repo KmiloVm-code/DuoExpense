@@ -18,8 +18,8 @@ export const useDataTable = () => {
     try {
       if (!userId) return
       setLoading(true)
-      const startDate = dateRange.start.toString()
-      const endDate = dateRange.end.toString()
+      const startDate = dateRange?.from?.toISOString()
+      const endDate = dateRange?.to?.toISOString()
       const transactionsData = await getTransactionsService(
         { filters: `&startDate=${startDate}&endDate=${endDate}` },
         userId
